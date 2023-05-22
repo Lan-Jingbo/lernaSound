@@ -1,0 +1,163 @@
+import React, { useState, useEffect } from 'react';
+import * as Tone from "tone";
+import YouTube from 'react-youtube';
+import DiscreteSlider from "./components/slider";
+import { usePitchShift } from './hooks/usePitchShift';
+const videoId = "HW4LSaJs7fo";
+
+// const player = new Tone.Player('YOUR_AUDIO_URL').toDestination();
+function App() {
+  const [audioUrl, setAudioUrl] = useState('');
+  // const [player, setPlayer] = useState(null);
+  const [pitchedPlayer, setPitchedPlayer] = useState(null);
+  const [youtube, setYouTube] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const {player, changePitchShift} = usePitchShift();
+
+  const [pitch, setPitch] = useState(0);
+
+
+  // Function to create a pitch-shifted player based on an existing player
+  const createPitchShiftedPlayer = (pitchShiftAmount) => {
+    if (pitchedPlayer) {
+      pitchedPlayer.disconnect();
+    }
+    // Get the audio buffer from the existing player
+    const audioBuffer = player.buffer;
+
+    // Create a new player with the same buffer
+    const newPlayer = new Tone.Player(audioBuffer);
+
+    // Create a PitchShift effect with the desired pitch shift
+    const pitchShift = new Tone.PitchShift(pitchShiftAmount);
+
+    // Create a Gain to control the volume of the new player
+    const gain = new Tone.Gain(1).toDestination(); // Set initial volume to 1
+    
+
+    // Connect the new player to the pitch shift and the gain
+    newPlayer.connect(pitchShift);
+    pitchShift.connect(gain);
+
+    // Start the new player
+    // Set the playback position of the new player to match the original player
+    const currentPosition = player.immediate();
+    //const startOffset = originalPlayer.immediate();
+    //await Tone.loaded();
+    newPlayer.sync().start(0);
+
+    setPitchedPlayer(newPlayer);
+
+    // Start the new player
+    // newPlayer.start();
+
+    // return { newPlayer, pitchShift, gain };
+  };
+
+
+  const handleGetAudio = async (videoId) => {
+    try {
+      const res = await fetch(`http://localhost:3001/audio/${videoId}`);
+      if (!res.ok) {
+        throw new Error('Failed to get audio from server.');
+      }
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      await Tone.start();
+      const player = new Tone.Player(audioUrl, () => {
+        // sync the Players to the Transport like this
+        player.sync().start(0);
+
+        setPlayer(player);
+        createPitchShiftedPlayer(0);
+
+        player.mute = true;
+        
+      }).toDestination();
+
+      // Play the audio file
+
+    } catch (error) {
+      console.error('Failed to get audio from server.', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Player is: ", player);
+    console.log(player == true);
+  }, player);
+
+  const onYouTubeIframeAPIReady = (event) => {
+    const player = event.target;
+    setYouTube(player);
+  };
+
+  const togglePlayback = () => {
+    if (isPlaying) {
+      Tone.Transport.pause();
+      youtube?.pauseVideo();
+
+      setIsPlaying(false);
+    } else {
+      Tone.Transport.start();
+      youtube.playVideo();
+      setIsPlaying(true);
+    }
+  };
+
+  useEffect(() => {
+    if (player) {
+      // Apply a pitch shift to a new player, based on the original player
+      createPitchShiftedPlayer(pitch);
+
+      player.mute = true;
+    }
+  }, [pitch]);
+
+
+
+
+
+
+  return (
+    <div>
+      <button onClick={() => handleGetAudio(videoId)}>
+        Get Audio
+      </button>
+
+
+      {player &&
+        (
+          <div className="hidden-youtube-player">
+
+            <YouTube
+              videoId={videoId}
+              onReady={onYouTubeIframeAPIReady}
+              opts={{
+                width: '360', height: '360',
+                playerVars: {
+                  autoplay: 0,
+                  controls: 0,
+                  mute: 1
+                }
+              }}
+            />
+
+            <div>Pithc shift by: </div>
+
+            <DiscreteSlider
+              sliderValue={pitch}
+              setSliderValue={setPitch}
+            />
+
+            {/* Control playback with a single button */}
+            <button onClick={togglePlayback}>{isPlaying ? 'Pause' : 'Play'}</button>
+          </div>
+        )
+      }
+    </div >
+  );
+}
+
+export default App;
