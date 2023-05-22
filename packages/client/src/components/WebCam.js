@@ -32,7 +32,6 @@
 //         // Get Video Properties
 //         const video = webcamRef.current.video;
 
-//         console.log("Video width and height is", video.width, video.height);
 
 //         // const videoWidth = width; 
 //         // //webcamRef.current.video.videoWidth;

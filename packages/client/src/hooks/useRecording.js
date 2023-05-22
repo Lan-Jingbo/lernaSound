@@ -36,7 +36,6 @@ function useRecording(newItem, newFilteredItem, peaks) {
         if (peaks && recording) {
             const newPeaks = peaks.filter(peak => !savedPeaks.includes(peak));
             setSavedPeaks(prevSavedPeaks => [...prevSavedPeaks, ...newPeaks]);
-            console.log("New peaks saved!", savedPeaks);
         }
     }, [peaks, recording]);
 
@@ -56,7 +55,6 @@ function useRecording(newItem, newFilteredItem, peaks) {
         const updatedSavedData = data.map((savedItem) => {
             const matchedPeak = savedPeaks.find((peak) => peak.time == savedItem.time);
             if (matchedPeak) {
-                console.log("Match was found!!!!");
                 return {
                     ...savedItem,
                     peak: true

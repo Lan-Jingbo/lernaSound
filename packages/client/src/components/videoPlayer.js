@@ -6,33 +6,40 @@ import "../App.css";
 import { useControlPanel } from "./ControlPanel";
 
 const VideoPlayer = ({ width, height }) => {
-  const videoRef = useVideoRef();
-  const { setNewItem } = useControlPanel();
-  const { euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
+  const {videoRef, euclideanDistance, eyePoint, namedKeypoints } = useControlPanel();
 
-
+  const localVideoRef = useRef(null);
   const canvasRef = useRef(null); // our canvas
 
   useEffect(() => {
+    localVideoRef.current.srcObject = videoRef.current.srcObject;
+    var isPlaying = localVideoRef.current.currentTime > 0 && !localVideoRef.current.paused && !localVideoRef.current.ended 
+    && localVideoRef.current.readyState > localVideoRef.current.HAVE_CURRENT_DATA;
+
+    if (!isPlaying) {
+      const playPromise = localVideoRef.current.play()
+
+      if (playPromise !== null) {
+        playPromise.catch(() => { 
+          console.log("Discarding runtime error!");
+          /* discard runtime error */
+         })
+      }
+
+    }
+    // localVideoRef.current.play();
+  }, [videoRef.current])
+
+  useEffect(() => {
     if (euclideanDistance !== undefined && euclideanDistance) {
-      setNewItem(euclideanDistance);
-      // Get canvas context
-      // const ctx = canvasRef.current.getContext("2d");
-
-      // Get Video Properties
-
-      // const videoWidth = width; 
-      // //videoRef.current.video.videoWidth;
-      // const videoHeight = height; 
-      // //videoRef.current.video.videoHeight;
 
       // // Set video width
-      videoRef.current.width = videoRef.current.videoWidth;
-      videoRef.current.height = videoRef.current.videoHeight;
+      localVideoRef.current.width = localVideoRef.current.videoWidth;
+      localVideoRef.current.height = localVideoRef.current.videoHeight;
 
       // // Set canvas width
-      canvasRef.current.width = videoRef.current.width;
-      canvasRef.current.height = videoRef.current.height;
+      canvasRef.current.width = localVideoRef.current.width;
+      canvasRef.current.height = localVideoRef.current.height;
 
       // const face = await net.estimateFaces(video);
 
@@ -44,7 +51,6 @@ const VideoPlayer = ({ width, height }) => {
           ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
           drawOnCanvas(ctx, eyePoint, namedKeypoints);
         }
-        // drawMesh(face, ctx, setNewItem)
       }
       );
     }
@@ -53,7 +59,7 @@ const VideoPlayer = ({ width, height }) => {
   return (<div className="App-header" >
 
     <div style={{ display: "grid" }}>
-      <video ref={videoRef}
+      <video ref={localVideoRef}
         className="webcam"
         width={width}
         height={height}

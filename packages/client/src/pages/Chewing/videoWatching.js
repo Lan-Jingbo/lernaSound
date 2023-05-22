@@ -61,10 +61,6 @@ function VideoWatching() {
   };
 
   useEffect(() => {
-    console.log(player);
-  }, [player]);
-
-  useEffect(() => {
     if (player) {
       // Apply a pitch shift to a new player, based on the original player
       changePitchShift(pitch);

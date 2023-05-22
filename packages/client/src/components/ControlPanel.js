@@ -15,7 +15,8 @@ import useRecording from '../hooks/useRecording';
 import RecordingComponent from './recordingComponent';
 import { useFaceMesh } from '../hooks/useFaceMesh';
 import useVideoRef from '../hooks/useVideoRef';
-
+import StatusIndicator from './StatusIndicator';
+import useVideoStreamRef from '../hooks/useVideoRef';
 // Create a context for the control panel data
 const ControlPanelContext = createContext();
 
@@ -26,7 +27,7 @@ export const useControlPanel = () => {
 
 // Control Panel Provider
 export const ControlPanelProvider = ({ children }) => {
-    // const videoRef = useVideoRef();
+    const videoRef = useVideoRef();
     const [itemsNo, setItemsNo] = useState(160);
 
     const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
@@ -34,20 +35,13 @@ export const ControlPanelProvider = ({ children }) => {
     // Include the useSignalProcessing logic and state in the provider
     const [newItem, setNewItem] = useState({ value: 0, time: new Date() });
     const signalProcessingData = useSignalProcessing(newItem, cutOffFrequency, itemsNo);
-
-    // useEffect(() => {
-    //     // const { data, filteredData, herz, peaks, newFilteredItem } = useSignalProcessing(newItem, cutOffFrequency, itemsNo);
-    //     const signalProcessingData = useSignalProcessing(newItem, cutOffFrequency, itemsNo);
-    //     setSignalProcessingData(signalProcessingData);
-    // }, [newItem]);
-
-    // const { euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
-
-    // console.log(euclideanDistance);
+    const { euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
     
-    // useEffect(() => {
-    //     setNewItem(euclideanDistance);
-    // }, [euclideanDistance]);
+    useEffect(() => {
+        if (euclideanDistance && euclideanDistance !== undefined){
+        setNewItem(euclideanDistance);
+    }
+    }, [euclideanDistance])
 
     const { recording, toggleRecording, save, timeElapsed } = useRecording(newItem, signalProcessingData.newFilteredItem, signalProcessingData.peaks);
 
@@ -65,10 +59,11 @@ export const ControlPanelProvider = ({ children }) => {
         toggleRecording,
         save,
         timeElapsed,
-        // videoRef,
-        // euclideanDistance,
-        // eyePoint,
-        // namedKeypoints
+
+        videoRef,
+        euclideanDistance,
+        eyePoint,
+        namedKeypoints
     };
 
     return (
@@ -119,6 +114,8 @@ const ControlPanel = () => {
             </Tooltip>
 
             <RecordingComponent recording={recording} toggleRecording = {toggleRecording} save = {save} timeElapsed = {timeElapsed} />
+            
+            <StatusIndicator/>
         </Box>
     );
 };

@@ -22,19 +22,6 @@ export const useFaceMesh = (videoRef) => {
                 // Get Video Properties
                 const video = videoRef.current;
 
-                // const videoWidth = width; 
-                // //videoRef.current.video.videoWidth;
-                // const videoHeight = height; 
-                // //videoRef.current.video.videoHeight;
-
-                //   // // Set video width
-                //   videoRef.current.video.width = videoRef.current.video.videoWidth;
-                //   videoRef.current.video.height = videoRef.current.video.videoHeight;
-
-                //   // // Set canvas width
-                //   canvasRef.current.width = videoRef.current.video.width;
-                //   canvasRef.current.height = videoRef.current.video.height;
-
                 const face = await net.estimateFaces(video);
 
                 if (face) {

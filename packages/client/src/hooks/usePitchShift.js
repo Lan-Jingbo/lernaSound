@@ -21,8 +21,6 @@ export const usePitchShift = (audioFileLink) => {
 
                 // Start the player
                 await Tone.loaded();
-
-                console.log("Player started!")
                 originalPlayer.sync().start(0);
                 // originalPlayer.sync();
                 setPlayer(originalPlayer);

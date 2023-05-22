@@ -11,7 +11,9 @@ const TimeSeriesChart = ({ rangeY }) => {
   const width = 640;
   const height = 640;
   const {data: data2, filteredData, peaks: circles} = useControlPanel();
-  // console.log("Data is: ", data2);
+  
+  console.log("Data is: ", data2);
+  
   const parentData = [data2, filteredData];
 
   const margin = { top: 20, right: 30, bottom: 30, left: 60 };
@@ -131,7 +133,7 @@ const TimeSeriesChart = ({ rangeY }) => {
         .attr("class", "circle")
         .attr("cx", d => updatedX(d.time))
         .attr("cy", d => updatedY(d.value))
-        .attr("r", 3);
+        .attr("r", 9);
 
       data.map((data, i) => {
         svg.select(".path" + i)
@@ -140,16 +142,12 @@ const TimeSeriesChart = ({ rangeY }) => {
           .duration(100)
           .attr("d", updatedLine);
       });
-
       setData(parentData);
     }
     updateChart();
   }
 
-
   useEffect(() => { redraw() }, [parentData[0]]);
-
-  console.log("Width is: ", width);
 
 
   return (

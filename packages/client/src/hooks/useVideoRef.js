@@ -2,28 +2,23 @@ import { useRef, useEffect } from "react";
 
 const useVideoRef = () => {
   const videoRef = useRef(null);
-  const hasPlayedRef = useRef(false);
 
   useEffect(() => {
-    if (!videoRef || hasPlayedRef.current) {
-      return;
-    }
+    const offscreenVideo = document.createElement('video');
+    offscreenVideo.height = 480;
+    offscreenVideo.width = 640;
+    offscreenVideo.autoplay = true;
+    offscreenVideo.playsinline = true;
+
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
-        let video = videoRef.current;
-        video.srcObject = stream;
-        var isPlaying = video.currentTime > 0 && !video.paused && !video.ended
-          && video.readyState > video.HAVE_CURRENT_DATA;
-
-        if (!isPlaying) {
-          video.play();
-        }
-
-        // Set the hasPlayedRef to true after playing.
-        hasPlayedRef.current = true;
+        offscreenVideo.srcObject = stream;
+        offscreenVideo.play();
       });
-  }, [videoRef]);
+
+    videoRef.current = offscreenVideo;
+  }, []);
 
   return videoRef;
 };

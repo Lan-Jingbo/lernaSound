@@ -44,7 +44,6 @@ export default function Chewing() {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
-        console.log("New value is: ", newValue);
         setValue(newValue);
     };
 
