@@ -1,80 +1,21 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
+
 import {
     Box,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
     Typography,
     Tooltip
 } from '@mui/material';
 import Slider from '@mui/material/Slider';
-import useSignalProcessing from '../hooks/useSignalProcessing';
-import useRecording from '../hooks/useRecording';
+// import StatusIndicator from './StatusIndicator';
 import RecordingComponent from './recordingComponent';
-import { useFaceMesh } from '../hooks/useFaceMesh';
-import useVideoRef from '../hooks/useVideoRef';
-import StatusIndicator from './StatusIndicator';
-import useVideoStreamRef from '../hooks/useVideoRef';
-// Create a context for the control panel data
-const ControlPanelContext = createContext();
+import ChewingIndicator from './chewingIndicator';
 
-// Custom hook to use the control panel context
-export const useControlPanel = () => {
-    return useContext(ControlPanelContext);
-};
-
-// Control Panel Provider
-export const ControlPanelProvider = ({ children }) => {
-    const videoRef = useVideoRef();
-    const [itemsNo, setItemsNo] = useState(160);
-
-    const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
-
-    // Include the useSignalProcessing logic and state in the provider
-    const [newItem, setNewItem] = useState({ value: 0, time: new Date() });
-    const signalProcessingData = useSignalProcessing(newItem, cutOffFrequency, itemsNo);
-    const { euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
-    
-    useEffect(() => {
-        if (euclideanDistance && euclideanDistance !== undefined){
-        setNewItem(euclideanDistance);
-    }
-    }, [euclideanDistance])
-
-    const { recording, toggleRecording, save, timeElapsed } = useRecording(newItem, signalProcessingData.newFilteredItem, signalProcessingData.peaks);
-
-    const value = {
-        itemsNo,
-        setItemsNo,
-        cutOffFrequency,
-        setCutOffFrequency,
-        data: signalProcessingData.data, // Add the useSignalProcessing data to the context
-        filteredData: signalProcessingData.filteredData,
-        herz: signalProcessingData.herz,
-        peaks: signalProcessingData.peaks,
-        setNewItem,
-        recording,
-        toggleRecording,
-        save,
-        timeElapsed,
-
-        videoRef,
-        euclideanDistance,
-        eyePoint,
-        namedKeypoints
-    };
-
-    return (
-        <ControlPanelContext.Provider value={value}>
-            {children}
-        </ControlPanelContext.Provider>
-    );
-};
+import { useSettings } from '../context/Context';
+import { useChewingFrequency } from '../context/Context';
 
 const ControlPanel = () => {
-    const { itemsNo, setItemsNo, cutOffFrequency, setCutOffFrequency, recording, toggleRecording, save, timeElapsed } = useControlPanel();
+    const { itemsNo, setItemsNo, cutOffFrequency, setCutOffFrequency, recording, toggleRecording, save, timeElapsed } = useSettings();
+    const { chewingFrequency } = useChewingFrequency();
 
     return (
         <Box border={1} borderColor="grey.300" borderRadius={8} p={2}>
@@ -115,7 +56,10 @@ const ControlPanel = () => {
 
             <RecordingComponent recording={recording} toggleRecording = {toggleRecording} save = {save} timeElapsed = {timeElapsed} />
             
-            <StatusIndicator/>
+
+            
+            {/* <StatusIndicator/> */}
+            <ChewingIndicator chewingFrequency={chewingFrequency} />
         </Box>
     );
 };

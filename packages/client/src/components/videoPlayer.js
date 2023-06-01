@@ -3,13 +3,15 @@ import useVideoRef from "../hooks/useVideoRef";
 import { useFaceMesh } from "../hooks/useFaceMesh";
 import { drawOnCanvas } from "../utils/utilities";
 import "../App.css";
-import { useControlPanel } from "./ControlPanel";
+import { useVideo } from "../context/Context";
 
 const VideoPlayer = ({ width, height }) => {
-  const {videoRef, euclideanDistance, eyePoint, namedKeypoints } = useControlPanel();
+  const {videoRef, eyePoint, namedKeypoints } = useVideo();
 
   const localVideoRef = useRef(null);
   const canvasRef = useRef(null); // our canvas
+
+  
 
   useEffect(() => {
     localVideoRef.current.srcObject = videoRef.current.srcObject;
@@ -31,7 +33,7 @@ const VideoPlayer = ({ width, height }) => {
   }, [videoRef.current])
 
   useEffect(() => {
-    if (euclideanDistance !== undefined && euclideanDistance) {
+    if (eyePoint !== undefined && eyePoint) {
 
       // // Set video width
       localVideoRef.current.width = localVideoRef.current.videoWidth;
@@ -54,7 +56,7 @@ const VideoPlayer = ({ width, height }) => {
       }
       );
     }
-  }, [euclideanDistance])
+  }, [eyePoint])
 
   return (<div className="App-header" >
 

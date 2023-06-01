@@ -49,25 +49,27 @@ export const getMesh = (predictions) => {
 
 
 export const drawOnCanvas = (ctx, eyePoint, namedKeypoints) => {
-      // draw the eyepoint
+  if (namedKeypoints && eyePoint && ctx) {
+    // draw the eyepoint
+    ctx.beginPath();
+    ctx.arc(eyePoint.x, eyePoint.y, 1 /* radius */, 0, 3 * Math.PI);
+    ctx.fillStyle = "aqua";
+    ctx.fill();
+
+
+    namedKeypoints["faceOval"].map(point => {
+      //      draw the face oval 
       ctx.beginPath();
-      ctx.arc(eyePoint.x, eyePoint.y, 1 /* radius */, 0, 3 * Math.PI);
+      ctx.arc(point.x, point.y, 1 /* radius */, 0, 3 * Math.PI);
       ctx.fillStyle = "aqua";
       ctx.fill();
-  
-  
-      namedKeypoints["faceOval"].map(point => {
-        //      draw the face oval 
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, 1 /* radius */, 0, 3 * Math.PI);
-        ctx.fillStyle = "aqua";
-        ctx.fill();
-  
-        // draw the distances
-  
-        ctx.beginPath(); // Start a new path
-        ctx.moveTo(eyePoint.x, eyePoint.y); // Move the pen to (30, 50)
-        ctx.lineTo(point.x, point.y); // Draw a line to (150, 100)
-        ctx.stroke(); // Render the path
-      })
+
+      // draw the distances
+
+      ctx.beginPath(); // Start a new path
+      ctx.moveTo(eyePoint.x, eyePoint.y); // Move the pen to (30, 50)
+      ctx.lineTo(point.x, point.y); // Draw a line to (150, 100)
+      ctx.stroke(); // Render the path
+    })
+  }
 }

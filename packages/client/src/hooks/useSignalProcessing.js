@@ -15,8 +15,6 @@ function pointLowPassFilter(prev, newItem, cutoffFreq, sampleRate) {
 
 export default function useSignalProcessing(newItem, cutOffFrequency, itemsNo) {
 
-    const threshold = 0.9;
-
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [newFilteredItem, setNewFilteredItem] = useState();
@@ -28,6 +26,10 @@ export default function useSignalProcessing(newItem, cutOffFrequency, itemsNo) {
 
     useEffect(() => {
         // filtering process
+
+        if (!newItem || newItem === undefined) return;
+
+
         if (data.length >= 10) {
             let prev;
             if (filteredData.length == 0) {
@@ -54,7 +56,6 @@ export default function useSignalProcessing(newItem, cutOffFrequency, itemsNo) {
         // setting the actual data
         setData([...data.slice(-itemsNo), newItem]);
     }, [newItem]);
-
 
     return { data, filteredData, herz, peaks, newFilteredItem }
 }

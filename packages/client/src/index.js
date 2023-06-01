@@ -3,15 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ControlPanelProvider } from './components/ControlPanel';
-
+import { ContextProvider } from './context/Context';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ControlPanelProvider>
+    <ContextProvider>
       <App />
-    </ControlPanelProvider>
+    </ContextProvider>
   </React.StrictMode>
 );
 

@@ -83,10 +83,7 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    console.log("Player is: ", player);
-    console.log(player == true);
-  }, player);
+
 
   const onYouTubeIframeAPIReady = (event) => {
     const player = event.target;

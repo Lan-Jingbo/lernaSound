@@ -2,6 +2,7 @@ export default function findPeaksP3(signal, threshold) {
     signal = signal.map(signal => signal.value);
     // Step 1: Find local maxima
     const peaks = [];
+
     for (let i = 1; i < signal.length - 1; i++) {
         if (signal[i] > signal[i - 1] && signal[i] > signal[i + 1]) {
             peaks.push(i);
@@ -13,8 +14,9 @@ export default function findPeaksP3(signal, threshold) {
     const rightSlopes = [];
     for (let i = 0; i < peaks.length; i++) {
         const index = peaks[i];
-        let maxIndex = index - 3;
-        let minIndex = index + 3;
+        const offset = 2;
+        let maxIndex = index - offset;
+        let minIndex = index + offset;
         if (minIndex >= 0 && maxIndex <= signal.length - 1) {
             const leftSlope = signal[index] - signal[maxIndex];
             const rightSlope = signal[minIndex] - signal[index];
@@ -25,7 +27,6 @@ export default function findPeaksP3(signal, threshold) {
             rightSlopes.push(0);
         }
     }
-
 
 
     // Step 3: Discard peaks with slopes below threshold
