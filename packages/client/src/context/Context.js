@@ -28,7 +28,6 @@ export const ContextProvider = ({ children }) => {
     // set up states and hooks as before...
     const videoRef = useVideoRef();
     const [itemsNo, setItemsNo] = useState(160);
-
     const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
 
     // Include the useSignalProcessing logic and state in the provider
@@ -38,7 +37,7 @@ export const ContextProvider = ({ children }) => {
         console.log(euclideanDistance);
     }, [animate]);
    
-    const signalProcessingData = useSignalProcessing(euclideanDistance, cutOffFrequency, itemsNo);
+    const signalProcessingData = useSignalProcessing(animate, euclideanDistance, cutOffFrequency, itemsNo);
 
     const { recording, toggleRecording, save, timeElapsed } = useRecording(euclideanDistance, signalProcessingData.newFilteredItem, signalProcessingData.peaks);
 

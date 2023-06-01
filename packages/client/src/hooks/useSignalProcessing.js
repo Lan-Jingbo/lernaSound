@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import findPeaksP3 from '../utils/findPeaksP3';
 import { useControlPanel } from '../components/ControlPanel';
 
@@ -13,49 +13,62 @@ function pointLowPassFilter(prev, newItem, cutoffFreq, sampleRate) {
     return current;
 }
 
-export default function useSignalProcessing(newItem, cutOffFrequency, itemsNo) {
-
-    const [data, setData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const [newFilteredItem, setNewFilteredItem] = useState();
-
-    const [peaks, setPeaks] = useState([]);
-
-    const [herz, setHerz] = useState(0);
-
-
+export default function useSignalProcessing(animate, newItem, cutOffFrequency, itemsNo) {
+    const dataRef = useRef({
+      data: [],
+      filteredData: [],
+      herz: 0,
+      peaks: [],
+      newFilteredItem: null,
+    });
+  
     useEffect(() => {
-        // filtering process
-
-        if (!newItem || newItem === undefined) return;
-
-
-        if (data.length >= 10) {
-            let prev;
-            if (filteredData.length == 0) {
-                prev = data.slice(-1)[0];
-            } else {
-                prev = filteredData.slice(-1)[0];
-            }
-            let elapsed = newItem.time.getTime() - prev.time.getTime();
-            let herz = 1 / (elapsed / 1000);
-            setHerz(herz);
-
-            let newFilteredItem = {
-                value: pointLowPassFilter(prev.value, newItem, 1, herz),
-                time: newItem.time,
-            };
-            setNewFilteredItem(newFilteredItem);
-
-            const peakIndexes = findPeaksP3(filteredData, cutOffFrequency);
-            setPeaks(peakIndexes.map(i => filteredData[i]));
-
-            setFilteredData([...filteredData.slice(-itemsNo), newFilteredItem])
+      // Filtering process
+      if (!newItem || newItem === undefined) return;
+  
+      const updateDataRef = (dataProperty, newValue) => {
+        dataRef.current = { ...dataRef.current, [dataProperty]: newValue };
+      };
+  
+      let data = dataRef.current.data;
+      let filteredData = dataRef.current.filteredData;
+  
+      if (data.length >= 10) {
+        let prev;
+        if (filteredData.length === 0) {
+          prev = data.slice(-1)[0];
+        } else {
+          prev = filteredData.slice(-1)[0];
         }
+        let elapsed = newItem.time.getTime() - prev.time.getTime();
+        let herz = 1 / (elapsed / 1000);
+        updateDataRef('herz', herz);
+  
+        let newFilteredItem = {
+          value: pointLowPassFilter(prev.value, newItem, 1, herz),
+          time: newItem.time,
+        };
+        updateDataRef('newFilteredItem', newFilteredItem);
+  
+        const peakIndexes = findPeaksP3(filteredData, cutOffFrequency);
+        const peaks = peakIndexes.map((i) => filteredData[i]);
+        updateDataRef('peaks', peaks);
+  
+        updateDataRef('filteredData', [...filteredData.slice(-itemsNo), newFilteredItem]);
+      }
+  
+      // Setting the actual data
+      updateDataRef('data', [...data.slice(-itemsNo), newItem]);
+    }, [animate]);
 
-        // setting the actual data
-        setData([...data.slice(-itemsNo), newItem]);
-    }, [newItem]);
-
-    return { data, filteredData, herz, peaks, newFilteredItem }
-}
+  
+    return useMemo(() => {
+      return {
+        data: dataRef.current.data,
+        filteredData: dataRef.current.filteredData,
+        herz: dataRef.current.herz,
+        peaks: dataRef.current.peaks,
+        newFilteredItem: dataRef.current.newFilteredItem,
+      };
+    }, [animate]);
+  }

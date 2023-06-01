@@ -14,6 +14,7 @@ import { useChewingFrequency } from '../../context/Context';
 
 const videoId = 'IaO_kRsMA3I';
 
+
 function VideoWatching() {
 
   const { chewingFrequency } = useChewingFrequency();

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useMemo, useEffect, useState, useCallback } from "react";
 import { getMesh } from "../utils/utilities";
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
 
@@ -37,7 +37,7 @@ export const useFaceMesh = (videoRef) => {
                         eyePoint,
                         namedKeypoints
                     }
-                    setAnimate(!animate);
+                    setAnimate(prevCheck => !prevCheck);
                 }
             }
         };
@@ -69,10 +69,12 @@ export const useFaceMesh = (videoRef) => {
     }, []);
 
 
-    return {
-        animate: animate,
-        euclideanDistance: meshDataRef.current.euclideanDistance,
-        eyePoint: meshDataRef.current.eyePoint,
-        namedKeypoints: meshDataRef.current.namedKeypoints
-    }
+    return useMemo(() => {
+        return {
+            animate: animate,
+            euclideanDistance: meshDataRef.current.euclideanDistance,
+            eyePoint: meshDataRef.current.eyePoint,
+            namedKeypoints: meshDataRef.current.namedKeypoints
+        }
+    }, [animate]);
 }

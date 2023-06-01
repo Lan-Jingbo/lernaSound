@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function useRecording(newItem, newFilteredItem, peaks) {
-    
+
     const [recording, setRecording] = useState(false);
-    const [savedData, setSavedData] = useState([]);
-    const [savedPeaks, setSavedPeaks] = useState([]);
-    const [startTime, setStartTime] = useState(null);
     const [timeElapsed, setTimeElapsed] = useState(0);
+    
+    
+    const savedDataRef = useRef([]);
+    const savedPeaksRef = useRef([]);
+    const startTimeRef = useRef(null);
 
     const toggleRecording = () => {
         if (!recording) {
-            setStartTime(new Date().getTime());
+            startTimeRef.current = new Date().getTime();
             setTimeElapsed(0);
         }
         setRecording(!recording);
@@ -20,23 +22,23 @@ function useRecording(newItem, newFilteredItem, peaks) {
         let interval;
         if (recording) {
             interval = setInterval(() => {
-                setTimeElapsed(new Date().getTime() - startTime);
+                setTimeElapsed(new Date().getTime() - startTimeRef.current);
             }, 1000);
         } else {
             clearInterval(interval);
         }
 
         return () => clearInterval(interval);
-    }, [recording, startTime]);
+    }, [recording]);
 
     const addDataPoint = (dataPoint) => {
-        setSavedData([...savedData, dataPoint]);
+        savedDataRef.current.push(dataPoint);
     };
 
     useEffect(() => {
         if (peaks && recording) {
-            const newPeaks = peaks.filter(peak => !savedPeaks.includes(peak));
-            setSavedPeaks(prevSavedPeaks => [...prevSavedPeaks, ...newPeaks]);
+            const newPeaks = peaks.filter(peak => !savedPeaksRef.current.includes(peak));
+            savedPeaksRef.current = [...savedPeaksRef.current, ...newPeaks];
         }
     }, [peaks, recording]);
 
@@ -49,12 +51,12 @@ function useRecording(newItem, newFilteredItem, peaks) {
                 peak: false
             });
         }
-    }, [newItem, newFilteredItem, recording]);
+    }, [newItem, recording]);
 
     const save = () => {
-        const data = [...savedData];
+        const data = [...savedDataRef.current];
         const updatedSavedData = data.map((savedItem) => {
-            const matchedPeak = savedPeaks.find((peak) => peak.time == savedItem.time);
+            const matchedPeak = savedPeaksRef.current.find((peak) => peak.time === savedItem.time);
             if (matchedPeak) {
                 return {
                     ...savedItem,
