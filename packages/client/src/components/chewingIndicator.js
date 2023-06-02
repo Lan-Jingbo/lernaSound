@@ -8,14 +8,6 @@ const ChewingIndicator = ({ limit = 50 }) => {
     const { chewingFrequency } = useChewingFrequency();
     const d3Container = useRef(null);
 
-    useEffect(() => {
-        if (d3Container.current) {
-            const svg = d3.select(d3Container.current);
-
-            // Create and update your D3 visualization here
-        }
-    });
-
     // Set up the dimensions and margins for the visualization
     const margin = { top: 10, right: 10, bottom: 30, left: 10 };
     const width = 400 - margin.left - margin.right;
@@ -27,40 +19,46 @@ const ChewingIndicator = ({ limit = 50 }) => {
         .range([0, width]);
     const xAxis = d3.axisBottom(xScale);
 
-    const svg = d3.select(d3Container.current);
+    useEffect(() => {
+        const svg = d3.select(d3Container.current);
 
-    // Append the x-axis to the svg
-    svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(xAxis)
-        .attr("font-size", "10px");
+        // Append the x-axis to the svg
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis)
+            .attr("font-size", "10px");
 
-    // Add the limit indicator line
-    const limitX = xScale(limit);
-    svg.append("line")
-        .attr("x1", limitX)
-        .attr("y1", 0)
-        .attr("x2", limitX)
-        .attr("y2", height)
-        .attr("stroke", "red")
-        .attr("stroke-width", 2);
+        // Add the limit indicator line
+        const limitX = xScale(limit);
+        svg.append("line")
+            .attr("x1", limitX)
+            .attr("y1", 0)
+            .attr("x2", limitX)
+            .attr("y2", height)
+            .attr("stroke", "red")
+            .attr("stroke-width", 2);
+    }, []);
 
-    // Update the circle position
-    svg.select(".circle")
-        .attr("cx", xScale(chewingFrequency))
-        .attr("cy", height / 2)
-        .attr("r", 15)
-        .attr("fill", "none")
-        .attr("stroke", "black")
-        .attr("stroke-width", 2);
+    useEffect(() => {
+        const svg = d3.select(d3Container.current);
+        // Update the circle position
+        svg.select(".circle")
+            .attr("cx", xScale(chewingFrequency))
+            .attr("cy", height / 2)
+            .attr("r", 15)
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 2);
 
-    // Update the text inside the circle
-    svg.select(".text")
-        .attr("x", xScale(chewingFrequency))
-        .attr("y", height / 2 + 5)
-        .style("text-anchor", "middle")
-        .text(chewingFrequency)
-        .attr("font-size", "12px");
+        // Update the text inside the circle
+        svg.select(".text")
+            .attr("x", xScale(chewingFrequency))
+            .attr("y", height / 2 + 5)
+            .style("text-anchor", "middle")
+            .text(chewingFrequency)
+            .attr("font-size", "12px");
+    }, [chewingFrequency])
+
 
     return (
         <Box>
@@ -77,7 +75,6 @@ const ChewingIndicator = ({ limit = 50 }) => {
             <Typography variant="caption">Current limit: {limit} Hz</Typography>
         </Box>
     );
-
 }
 
 export default ChewingIndicator;
