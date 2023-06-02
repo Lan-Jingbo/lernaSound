@@ -83,7 +83,7 @@ node version v18.16.0
 
 ### Bug fixes
 
-- **Fix audio issues**: Resolve any instance when two audio channels may be heard after the component unmounts. Investigate potential issues with the ToneJS library.
+✅ **Fix audio issues**: Resolve any instance when two audio channels may be heard after the component unmounts. Investigate potential issues with the ToneJS library. (02/06/2023)
 
 ### Enhancements
 
