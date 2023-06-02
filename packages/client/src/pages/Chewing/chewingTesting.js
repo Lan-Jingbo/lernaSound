@@ -33,7 +33,6 @@ function ChewingTesting() {
     return (
         <div>
             <Stack spacing={2}>
-                {/* <WebCam width={webcamWidth} height={webcamHeight} /> */}
                 <VideoPlayer width={webcamWidth} height={webcamHeight} />
                 <TimeSeriesChart width={canvasWidth} height={canvasHeight} rangeY={{ min: null, max: null }} />
             </Stack>

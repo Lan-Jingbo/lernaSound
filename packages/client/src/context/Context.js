@@ -28,6 +28,7 @@ export const ContextProvider = ({ children }) => {
     // set up states and hooks as before...
     const videoRef = useVideoRef();
     const [itemsNo, setItemsNo] = useState(160);
+    const [chewingFrequency, setChewingFrequency] = useState(null);
     const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
 
     // Include the useSignalProcessing logic and state in the provider
@@ -36,6 +37,10 @@ export const ContextProvider = ({ children }) => {
     const signalProcessingData = useSignalProcessing(animate, euclideanDistance, cutOffFrequency, itemsNo);
 
     const { recording, toggleRecording, save, timeElapsed } = useRecording(euclideanDistance, signalProcessingData.newFilteredItem, signalProcessingData.peaks);
+
+    useEffect(() => {
+        setChewingFrequency(avgFrequency(signalProcessingData.peaks, 5));
+    }, [animate]);
 
     const settingsValue = {
         itemsNo,
@@ -62,7 +67,7 @@ export const ContextProvider = ({ children }) => {
     };
 
     const chewingFrequencyValue = {
-        chewingFrequency: avgFrequency(signalProcessingData.peaks, 5),
+        chewingFrequency: chewingFrequency
     };
 
     return (

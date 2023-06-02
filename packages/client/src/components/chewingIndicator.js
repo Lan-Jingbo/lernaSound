@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { Box, Typography } from '@mui/material';
 import * as d3 from 'd3';
 import { useChewingFrequency } from '../context/Context';
@@ -62,7 +62,8 @@ const ChewingIndicator = ({ limit = 50 }) => {
 
     return (
         <Box>
-            <Typography variant="subtitle1">Chewing Frequency Indicator</Typography>
+            <MemoTypography1 />
+
             <svg
                 ref={d3Container}
                 viewBox={`0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`}
@@ -72,9 +73,26 @@ const ChewingIndicator = ({ limit = 50 }) => {
                     <text className="text" />
                 </g>
             </svg>
-            <Typography variant="caption">Current limit: {limit} Hz</Typography>
+            
+            <MemoTypography2/>
         </Box>
     );
 }
+
+const MemoTypography1 = memo(({  }) => {
+    return (
+      <>
+        <Typography variant="subtitle1">Chewing Frequency Indicator</Typography>
+      </>
+    );
+});
+
+const MemoTypography2 = memo(({ limit }) => {
+    return (
+      <>
+        <Typography variant="caption">Current limit: {limit} Hz</Typography>
+      </>
+    );
+});
 
 export default ChewingIndicator;
