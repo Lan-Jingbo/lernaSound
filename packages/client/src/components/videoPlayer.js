@@ -6,12 +6,11 @@ import "../App.css";
 import { useVideo } from "../context/Context";
 
 const VideoPlayer = ({ width, height }) => {
+
   const {videoRef, eyePoint, namedKeypoints } = useVideo();
 
   const localVideoRef = useRef(null);
   const canvasRef = useRef(null); // our canvas
-
-  
 
   useEffect(() => {
     localVideoRef.current.srcObject = videoRef.current.srcObject;
@@ -56,7 +55,7 @@ const VideoPlayer = ({ width, height }) => {
       }
       );
     }
-  }, [eyePoint])
+  }, [eyePoint?.x])
 
   return (<div className="App-header" >
 

@@ -11,11 +11,60 @@ import RecordingComponent from './recordingComponent';
 import ChewingIndicator from './chewingIndicator';
 
 import { useSettings } from '../context/Context';
-import { useChewingFrequency } from '../context/Context';
 
+const customComparator = (prevProps, nextProps) => {
+    return (
+      nextProps.timeElapsed === prevProps.timeElapsed &&
+      nextProps.itemsNo === prevProps.itemsNo &&
+      nextProps.cutOffFrequency === prevProps.cutOffFrequency &&
+      nextProps.recording === prevProps.recording
+    );
+  };
+
+// Separate the ControlPanelWrapper component from ControlPanel
 const ControlPanel = () => {
-    const { itemsNo, setItemsNo, cutOffFrequency, setCutOffFrequency, recording, toggleRecording, save, timeElapsed } = useSettings();
-    const { chewingFrequency } = useChewingFrequency();
+    const {
+      itemsNo,
+      setItemsNo,
+      cutOffFrequency,
+      setCutOffFrequency,
+      recording,
+      toggleRecording,
+      save,
+      timeElapsed,
+    } = useSettings();
+  
+    return (
+      <ControlPanelJunior
+        itemsNo={itemsNo}
+        setItemsNo={setItemsNo}
+        cutOffFrequency={cutOffFrequency}
+        setCutOffFrequency={setCutOffFrequency}
+        recording={recording}
+        toggleRecording={toggleRecording}
+        save={save}
+        timeElapsed={timeElapsed}
+      />
+    )
+}  
+
+
+const ControlPanelJunior = React.memo((props) => {
+    const {
+      itemsNo,
+      setItemsNo,
+      cutOffFrequency,
+      setCutOffFrequency,
+      recording,
+      toggleRecording,
+      save,
+      timeElapsed,
+    } = props;
+    
+    useEffect(() => {
+        console.log("Something updated!");
+        console.log(itemsNo, setItemsNo, cutOffFrequency, setCutOffFrequency, recording, toggleRecording, save, timeElapsed);
+    }, [itemsNo, setItemsNo, cutOffFrequency, setCutOffFrequency, recording, toggleRecording, save, timeElapsed]);
 
     return (
         <Box border={1} borderColor="grey.300" borderRadius={8} p={2}>
@@ -39,6 +88,8 @@ const ControlPanel = () => {
             <Typography id="cutOffFrequency-label" gutterBottom>
                 Cut-off frequency: {cutOffFrequency.toFixed(1)}
             </Typography>
+
+
             <Tooltip
                 title="The local derivative necessary for a peak to be counted as a chew"
                 placement="right"
@@ -54,14 +105,12 @@ const ControlPanel = () => {
                 />
             </Tooltip>
 
-            <RecordingComponent recording={recording} toggleRecording = {toggleRecording} save = {save} timeElapsed = {timeElapsed} />
-            
+            <RecordingComponent recording={recording} toggleRecording={toggleRecording} save={save} timeElapsed={timeElapsed} />
 
-            
-            {/* <StatusIndicator/> */}
-            <ChewingIndicator chewingFrequency={chewingFrequency} />
+            <ChewingIndicator/>
         </Box>
     );
-};
+}, customComparator);
+
 
 export default ControlPanel;

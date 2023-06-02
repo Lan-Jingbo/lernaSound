@@ -4,8 +4,7 @@ function useRecording(newItem, newFilteredItem, peaks) {
 
     const [recording, setRecording] = useState(false);
     const [timeElapsed, setTimeElapsed] = useState(0);
-    
-    
+
     const savedDataRef = useRef([]);
     const savedPeaksRef = useRef([]);
     const startTimeRef = useRef(null);

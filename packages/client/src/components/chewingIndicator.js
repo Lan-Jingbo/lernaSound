@@ -1,9 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import * as d3 from 'd3';
+import { useChewingFrequency } from '../context/Context';
 
 
-const ChewingIndicator = ({ chewingFrequency = 30, limit = 50 }) => {
+const ChewingIndicator = ({ limit = 50 }) => {
+    const { chewingFrequency } = useChewingFrequency();
     const d3Container = useRef(null);
 
     useEffect(() => {

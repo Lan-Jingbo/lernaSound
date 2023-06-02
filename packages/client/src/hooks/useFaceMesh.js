@@ -11,9 +11,6 @@ export const useFaceMesh = (videoRef) => {
         eyePoint: null,
         namedKeypoints: null,
     });
-    // const [euclideanDistance, setEuclideanDistance] = useState();
-    // const [eyePoint, setEyePoint] = useState();
-    // const [namedKeypoints, setNamedKeypoints] = useState();
 
     const UPDATE_MS = 20;
 

@@ -32,10 +32,6 @@ export const ContextProvider = ({ children }) => {
 
     // Include the useSignalProcessing logic and state in the provider
     const { animate, euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
-
-    useEffect(() => {
-        console.log(euclideanDistance);
-    }, [animate]);
    
     const signalProcessingData = useSignalProcessing(animate, euclideanDistance, cutOffFrequency, itemsNo);
 
