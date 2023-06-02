@@ -75,7 +75,7 @@ node version v18.16.0
 
 ### Improve tracking functionality
 
-- **Select monitored head**: In situations where multiple individuals are eating together (e.g., family meals), the system should provide an option to select the target individual to monitor (e.g., select child's chewing pace if detecting a child amidst other diners).
+-[ ] **Select monitored head**: In situations where multiple individuals are eating together (e.g., family meals), the system should provide an option to select the target individual to monitor (e.g., select child's chewing pace if detecting a child amidst other diners).
 
 - **Correct for head tilting**: Robust detection is crucial when considering restless populations, such as children. The system should be able to handle variations in head tilt angles and maintain reliable chewing pace detection.
 
