@@ -1,13 +1,11 @@
-# lernaSound
-
-# Chewing Pace Detection and Intervention
+# Chewing Pace Detection and Intervention 😋
 
 This is a Lerna project that aims to monitor the user's chewing pace during video playback and intervene when the chewing pace is above a set threshold. It consists of two packages: `client` and `server`.
 
 ## Overview
 
-- Server: Responsible for manipulating audio pitch to augment the intervention (increasing pitch in case of excessive chewing) by downloading separate audio files for a YouTube video.
-- Client: Implements TensorFlow.js-based facial recognition to calculate distances from the eye to the endpoints of the face oval, creating a chewing signal in response. The chew detection is conducted through low-pass filtering and peak recognition.
+- **Server**: Responsible for manipulating audio pitch to augment the intervention (increasing pitch in case of excessive chewing) by downloading separate audio files for a YouTube video.
+- **Client**: Implements TensorFlow.js-based facial recognition to calculate distances from the eye to the endpoints of the face oval, creating a chewing signal in response. The chew detection is conducted through low-pass filtering and peak recognition.
 
 ## Project Structure
 
@@ -61,3 +59,30 @@ The client package hosts the user interface for the project and runs facial reco
 - **chewingFrequencyIndicator**: Displays the current chewing pace in chews per minute. A red line illustrates the set limit (hard-coded to 50 chews) beyond which the intervention will be triggered.
 
 During video playback, if the chewing pace surpasses the specified threshold, the audio pitch of the video will be changed proportionally to the deviation from the norm of 50 chews per minute.
+
+### Notes 
+
+npm version 9.5.1
+node version v18.16.0
+
+## TODO
+
+### Improve tracking functionality
+
+- **Select monitored head**: In situations where multiple individuals are eating together (e.g., family meals), the system should provide an option to select the target individual to monitor (e.g., select child's chewing pace if detecting a child amidst other diners).
+
+- **Correct for head tilting**: Robust detection is crucial when considering restless populations, such as children. The system should be able to handle variations in head tilt angles and maintain reliable chewing pace detection.
+
+- **Distinguish talking and chewing**: There should be a mechanism to differentiate between talking and chewing by analyzing audio data. By utilizing both audio and visual information, the system could improve the accuracy of chew detection.
+
+### Bug fixes
+
+- **Fix audio issues**: Resolve any instance when two audio channels may be heard after the component unmounts. Investigate potential issues with the ToneJS library.
+
+### Enhancements
+
+- **Implement other interventions**: Explore additional interventions, such as visuals or changes in brightness, to further enhance the project's ability to detect and intervene with chewing pace fluctuations.
+
+- **Hideable side panel**: Implement a feature to hide the side panel, providing a cleaner interface for users.
+
+- **YouTube link input**: Allow users to copy and paste YouTube links for use in the application.
