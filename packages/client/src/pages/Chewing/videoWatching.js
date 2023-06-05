@@ -76,9 +76,8 @@ function VideoWatching() {
 
   useEffect(() => {
     return () => {
-      if (player) {
-        player.dispose();
-      }
+      Tone.Transport.pause();
+
       if (youtube) {
         youtube.destroy();
       }
@@ -88,6 +87,7 @@ function VideoWatching() {
     };
   }, []); // Add an empty dependency
 
+  
   const onPlayerStateChange = (event) => {
     const playerState = event.target.getPlayerState();
     if (playerState === 1) {
@@ -101,18 +101,6 @@ function VideoWatching() {
 
   useEffect(() => {
     handleGetAudio(videoId);
-
-    return () => {
-      if (player) {
-        player.dispose();
-      }
-      if (youtube) {
-        youtube.destroy();
-      }
-      // Add the following lines to stop and clean up Tone.Transport
-      Tone.Transport.stop();
-      Tone.Transport.cancel();
-    };
   }, []);
 
   useEffect(() => {

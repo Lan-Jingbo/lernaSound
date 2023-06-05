@@ -1,69 +1,67 @@
-import { useState, useEffect, useRef } from 'react';
-import * as Tone from 'tone';
-
-
+import { useEffect, useRef } from "react";
+import * as Tone from "tone";
 
 export const usePitchShift = (audioFileLink) => {
-
-  const [player, setPlayer] = useState(null);
-  const [intermediateGain, setIntermediateGain] = useState(null);
-  const [pitchShiftNode, setPitchShiftNode] = useState(null);
-  const bufferRef = useRef();
+  const playerRef = useRef(null);
+  const pitchShiftNodeRef = useRef(null);
 
   useEffect(() => {
-
-    console.log("Just loaded again! with player: ", player);
-    if (!audioFileLink) return;
-
-    if (player) return;
+    let isMounted = true;
+    let cleanup;
+    let originalPlayer;
 
     (async () => {
-      bufferRef.current = new Tone.Buffer(audioFileLink, async () => {
-        const originalPlayer = new Tone.Player(bufferRef.current);
-        const intermediateGainNode = new Tone.Gain(1).toDestination();
+      if (!playerRef.current && audioFileLink) {
+        const buffer = await Tone.Buffer.fromUrl(audioFileLink);
 
-        // Connect the player to the intermediate gain node
-        originalPlayer.connect(intermediateGainNode);
+        if (isMounted){
+          console.log("Player is: ", originalPlayer);
+          originalPlayer = new Tone.Player(buffer);
+          await Tone.loaded();
+          originalPlayer.sync().start(0);
+          playerRef.current = originalPlayer;
+          playerRef.current.toDestination();
+        }
 
-        // Start the player
-        await Tone.loaded();
-        originalPlayer.sync().start(0);
-
-        setPlayer(originalPlayer);
-        setIntermediateGain(intermediateGainNode);
-      });
+      }
     })();
 
-    return () => {
-      if (intermediateGain) {
-        intermediateGain.disconnect();
-      }
-      if (player) {
-        player.sync(-1).stop();
-      }
-      if (bufferRef.current) {
-        bufferRef.current = null;
+    cleanup = () => {
+      isMounted = false;
+      if (playerRef.current) {
+        playerRef.current.sync(-1).stop();
+        playerRef.current.disconnect();
+        playerRef.current.dispose();
+
+        console.log(playerRef.current._wasDisposed);
       }
     };
+
+    return cleanup;
   }, [audioFileLink]);
 
-  
-
   const changePitchShift = (newPitchShiftAmount) => {
-    if (pitchShiftNode) {
-      pitchShiftNode.disconnect();
-      pitchShiftNode.dispose();
-    } else {
-      player.disconnect(intermediateGain);
+    playerRef.current.toDestination();
+    const player = playerRef.current;
+
+    if (pitchShiftNodeRef.current) {
+      pitchShiftNodeRef.current.dispose();
     }
 
-    const pitchShift = new Tone.PitchShift(newPitchShiftAmount);
-    player.chain(pitchShift, intermediateGain);
-    setPitchShiftNode(pitchShift);
+    if (newPitchShiftAmount === 0) {
+      player.disconnect();
+      player.toDestination();
+      pitchShiftNodeRef.current = null;
+    } else {
+      player.disconnect();
+      const pitchShift = new Tone.PitchShift(newPitchShiftAmount);
+      player.chain(pitchShift, Tone.Destination);
+      pitchShiftNodeRef.current = pitchShift;
+    }
   };
 
   return {
-    player,
+    player: playerRef.current,
     changePitchShift,
   };
 };
