@@ -1,44 +1,42 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { useData } from "../context/Context";
 
-const fill = "white"; // fill color of dots
-const stroke = "black"; // stroke color of line and dots
-const strokeWidth = 2; // stroke width of line and dots
+const circleStyles = [
+  { fill: "white", stroke: "black", strokeWidth: 4, textColor: "white" },
+  { fill: "grey", stroke: "black", strokeWidth: 4, textColor: "white" },
+];
 
-const TimeSeriesChart = ({ rangeY }) => {
+
+
+const TimeSeriesChart = ({ chartData, rangeY, multipleCircles }) => {
   const width = 640;
   const height = 640;
 
-  const { data, filteredData, peaks: circles } = useData();
-
   const margin = { top: 20, right: 30, bottom: 30, left: 60 };
-  // width = width - margin.left - margin.right;
-  // height = height - margin.top - margin.bottom;
 
   const svgRef = useRef();
 
   const Y = (arg, data) => {
-    if (arg == "min") {
+    if (arg === "min") {
       return d3.min(data, (d) => d.value) * 0.8;
     }
-    if (arg == "max") {
+    if (arg === "max") {
       return d3.max(data, (d) => d.value) * 1.2;
     }
   };
 
   useEffect(() => {
-    let ignore = false;
-    if (!ignore) {
-    const Ymin = rangeY.min | Y("min", data);
-    const Ymax = rangeY.max | Y("max", data);
+    const Ymin = rangeY.min || Y("min", chartData[0]);
+    const Ymax = rangeY.max || Y("max", chartData[0]);
 
     const svg = d3.select(svgRef.current);
+
+    svg.selectAll("*").remove(); // Cleanup previous elements
 
     const x = d3
       .scaleTime()
       .range([0, width])
-      .domain(d3.extent(data.map((d) => d.time)));
+      .domain(d3.extent(chartData[0].map((d) => d.time)));
 
     const y = d3
       .scaleLinear()
@@ -60,7 +58,7 @@ const TimeSeriesChart = ({ rangeY }) => {
 
     const colors = ["steelblue", "red"];
 
-    [data, filteredData].map((data, i) => {
+    chartData.map((data, i) => {
       svg
         .append("path")
         .datum(data)
@@ -71,77 +69,41 @@ const TimeSeriesChart = ({ rangeY }) => {
         .attr("d", line);
     });
 
-    svg
-      .append("g")
-      .attr("fill", fill)
-      .attr("stroke", stroke)
-      .attr("stroke-width", strokeWidth)
-      .selectAll("circle")
-      .data(circles)
-      .join("circle")
-      .attr("class", "circle")
-      .attr("cx", (d) => x(d.time))
-      .attr("cy", (d) => y(d.value))
-      .attr("r", 3);
-    }
-    return () => { ignore = true };
-  }, []);
+    if (multipleCircles) {
+      const circleStyles = [
+        { fill: "white", stroke: "black", strokeWidth: 4 },
+        { fill: "grey", stroke: "black", strokeWidth: 4 },
+      ];
 
-  useEffect(() => {
-    const svg = d3.select(svgRef.current);
-
-    const updateChart = () => {
-      const Ymin = rangeY.min | Y("min", data);
-      const Ymax = rangeY.max | Y("max", data);
-      const updatedX = d3
-        .scaleTime()
-        .range([0, width])
-        .domain(d3.extent(data, (d) => d.time));
-
-      const updatedY = d3
-        .scaleLinear()
-        .range([height, 0])
-        .domain([Ymin, Ymax]);
-
-      const xAxis = d3.axisBottom(updatedX);
-
-      const yAxis = d3.axisLeft(updatedY);
-
-      const updatedLine = d3
-        .line()
-        .x((d) => updatedX(d.time))
-        .y((d) => updatedY(d.value));
-
-      svg.select(".x.axis").transition().duration(100).call(xAxis);
-
-      svg.select(".y.axis").transition().duration(100).call(yAxis);
-
-      svg.selectAll(".circle").remove();
-
-      svg
-        .append("g")
-        .attr("fill", fill)
-        .attr("stroke", stroke)
-        .attr("stroke-width", strokeWidth)
-        .selectAll("circle")
-        .data(circles)
-        .join("circle")
-        .attr("class", "circle")
-        .attr("cx", (d) => updatedX(d.time))
-        .attr("cy", (d) => updatedY(d.value))
-        .attr("r", 9);
-
-      [data, filteredData].map((data,i) => {
+      multipleCircles.forEach((circles, i) => {
         svg
-          .select(".path" + i)
-          .datum(data)
-          .transition()
-          .duration(100)
-          .attr("d", updatedLine);
+          .append("g")
+          .attr("fill", circleStyles[i].fill)
+          .attr("stroke", circleStyles[i].stroke)
+          .attr("stroke-width", circleStyles[i].strokeWidth)
+          .selectAll("circle")
+          .data(circles)
+          .join("circle")
+          .attr("class", `circle${i}`)
+          .attr("cx", (d) => x(d.time))
+          .attr("cy", (d) => y(d.value))
+          .attr("r", 6);
+
+        // Add text elements above circles
+        svg
+          .append("g")
+          .attr("text-anchor", "middle") // Centers the text above circles
+          .attr("fill", "white") // Use textColor from circleStyles array
+          .selectAll("text")
+          .data(circles)
+          .join("text")
+          .attr("class", `circleText${i}`)
+          .attr("x", (d) => x(d.time))
+          .attr("y", (d) => y(d.value) - 12) // 12 is an arbitrary value to position text above the circle
+          .text((d) => (d.text ? d.text : ""));
       });
-    };
-    updateChart();
-  }, [data]);
+    }
+  }, [chartData, rangeY, multipleCircles]);
 
   return (
     <div>

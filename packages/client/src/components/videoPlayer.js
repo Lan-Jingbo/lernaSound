@@ -6,7 +6,6 @@ import "../App.css";
 import { useVideo } from "../context/Context";
 
 const VideoPlayer = ({ width, height }) => {
-
   const {videoRef, eyePoint, namedKeypoints } = useVideo();
 
   const localVideoRef = useRef(null);

@@ -34,12 +34,12 @@ export const ContextProvider = ({ children }) => {
     // Include the useSignalProcessing logic and state in the provider
     const { animate, euclideanDistance, eyePoint, namedKeypoints } = useFaceMesh(videoRef);
    
-    const signalProcessingData = useSignalProcessing(animate, euclideanDistance, cutOffFrequency, itemsNo);
+    const signalProcessingData = useSignalProcessing(animate, eyePoint, euclideanDistance, cutOffFrequency, itemsNo);
 
-    const { recording, toggleRecording, save, timeElapsed } = useRecording(euclideanDistance, signalProcessingData.newFilteredItem, signalProcessingData.peaks);
+    const { recording, toggleRecording, save, timeElapsed } = useRecording(euclideanDistance, signalProcessingData.newFilteredItem, signalProcessingData.filteredPeaks);
 
     useEffect(() => {
-        setChewingFrequency(avgFrequency(signalProcessingData.peaks, 5));
+        setChewingFrequency(avgFrequency(signalProcessingData.filteredPeaks, 5));
     }, [animate]);
 
     const settingsValue = {
@@ -56,8 +56,10 @@ export const ContextProvider = ({ children }) => {
     const dataValue = {
         data: signalProcessingData.data,
         filteredData: signalProcessingData.filteredData,
-        peaks: signalProcessingData.peaks,
+        filteredPeaks: signalProcessingData.filteredPeaks,
+        removedPeaks: signalProcessingData.removedPeaks,
         euclideanDistance,
+        eyePointDistance: signalProcessingData.eyePointDistance
     };
 
     const videoValue = {

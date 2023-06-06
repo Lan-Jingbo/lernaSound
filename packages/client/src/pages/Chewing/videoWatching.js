@@ -145,19 +145,23 @@ function VideoWatching() {
                   },
                 }}
               />
-              <div className="overlay-play-button">
-                <IconButton onClick={togglePlayback} color="primary">
-                  {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-                </IconButton>
-              </div>
             </div>
             <div>Pitch shift by: </div>
-            <DiscreteSlider sliderValue={pitch} setSliderValue={setPitch} />
+            <MemoSlider pitch = {pitch} setPitch = {setPitch} />
           </div>
         )
       )}
     </div>
   );
 }
+
+const MemoSlider = React.memo(
+  ({ pitch, setPitch }) => (
+    <DiscreteSlider sliderValue={pitch} setSliderValue={setPitch} />
+  ),
+  (prevProps, nextProps) => {
+    return prevProps.pitch === nextProps.pitch;
+  }
+);
 
 export default VideoWatching;
