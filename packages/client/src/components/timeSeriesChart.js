@@ -6,8 +6,6 @@ const circleStyles = [
   { fill: "grey", stroke: "black", strokeWidth: 4, textColor: "white" },
 ];
 
-
-
 const TimeSeriesChart = ({ chartData, rangeY, multipleCircles }) => {
   const width = 640;
   const height = 640;

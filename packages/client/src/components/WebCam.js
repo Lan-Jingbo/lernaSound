@@ -18,7 +18,7 @@ export default function WebCam({ width, height }) {
 
   const webcamRef = useRef(null); // our webcam
   const canvasRef = useRef(null); // our canvas
-  const effectRan = useRef();
+  const effectRan = useRef(); // our effect
 
 
   const runFacemesh = useCallback(async () => {
