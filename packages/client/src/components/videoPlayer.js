@@ -6,28 +6,30 @@ import "../App.css";
 import { useVideo } from "../context/Context";
 
 const VideoPlayer = ({ width, height }) => {
-  const { videoRef, eyePoint, namedKeypoints } = useVideo();
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [videoId, setVideoId] = useState('');
+  const {videoRef, eyePoint, namedKeypoints } = useVideo();
+  const [videoUrl, setVideoUrl] = useState(''); // State to store video URL
 
   const localVideoRef = useRef(null);
   const canvasRef = useRef(null); // our canvas
 
-  // Function to extract the YouTube video ID from the URL
-  const getYouTubeId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+  // Function to handle video URL input change
+  const handleVideoUrlChange = (e) => {
+    setVideoUrl(e.target.value);
   };
 
-  // Handler for form submission
-  const handleYouTubeSubmit = (event) => {
-    event.preventDefault();
-    const id = getYouTubeId(youtubeUrl);
-    setVideoId(id);
+  // Function to load video from URL
+  const loadVideo = () => {
+    if (videoUrl) {
+      localVideoRef.current.src = videoUrl;
+      localVideoRef.current.load();
+    }
   };
 
   useEffect(() => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      localVideoRef.current.srcObject = videoRef.current.srcObject;
+    }
+
     localVideoRef.current.srcObject = videoRef.current.srcObject;
     var isPlaying = localVideoRef.current.currentTime > 0 && !localVideoRef.current.paused && !localVideoRef.current.ended 
     && localVideoRef.current.readyState > localVideoRef.current.HAVE_CURRENT_DATA;
@@ -74,45 +76,28 @@ const VideoPlayer = ({ width, height }) => {
 
   return (
     <div className="App-header">
-      {/* YouTube input form */}
-      <form onSubmit={handleYouTubeSubmit}>
-        <input
-          type="text"
-          value={youtubeUrl}
-          onChange={(e) => setYoutubeUrl(e.target.value)}
-          placeholder="Enter YouTube URL"
-        />
-        <button type="submit">Load Video</button>
-      </form>
+      <div style={{ marginBottom: "20px" }}>
+        <input type="text" value={videoUrl} onChange={handleVideoUrlChange} placeholder="Enter video URL" />
+        <button onClick={loadVideo}>Load Video</button>
+      </div>
 
-      {/* Conditionally render the YouTube iframe or the local video and canvas */}
-      {videoId ? (
-        <iframe
+      <div style={{ display: "grid" }}>
+        <video ref={localVideoRef}
+          className="webcam"
           width={width}
           height={height}
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-          frameBorder="0"
-          allowFullScreen
-          title="Embedded YouTube Video"
-        ></iframe>
-      ) : (
-        <div style={{ display: "grid" }}>
-          <video
-            ref={localVideoRef}
-            className="webcam"
-            width={width}
-            height={height}
-          />
-          <canvas
-            width={width}
-            height={height}
-            ref={canvasRef}
-            className="canvas"
-          />
-        </div>
-      )}
+          controls
+        />
+
+        <canvas
+          width={width}
+          height={height}
+          ref={canvasRef}
+          className="canvas"
+        />
+      </div>
     </div>
-  );
+  )
 };
 
 export default VideoPlayer;
