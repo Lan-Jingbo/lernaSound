@@ -168,6 +168,7 @@
 
 import React, { useState } from 'react';
 import YouTube from 'react-youtube';
+import './videoWatching.css';
 
 function VideoWatching() {
   const [videoId, setVideoId] = useState('');
@@ -198,24 +199,26 @@ function VideoWatching() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="video-watching-container">
+      <form onSubmit={handleSubmit} className="url-form">
         <input
           type="text"
+          className="youtube-url-input"
           value={inputValue}
           onChange={handleInputChange}
           placeholder="Enter YouTube URL"
         />
-        <button type="submit">Load Video</button>
+        <button type="submit" className="load-video-button">Load Video</button>
       </form>
-      {videoId && (
+      {videoId && ( // Check that videoId is not empty
         <YouTube
-          videoId={videoId}
+          videoId={videoId} // Pass videoId to the YouTube component
           opts={{
-            width: '640',
-            height: '390',
+            width: '1066.6666667',
+            height: '600',
             playerVars: {
-              autoplay: 1,
+              autoplay: 1, // Autoplay the video
+              controls: 1, // Show controls
             },
           }}
         />

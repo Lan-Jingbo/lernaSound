@@ -1,0 +1,63 @@
+.video-watching-container {
+  background-color: #7E57C2; /* Purple background */
+  height: 100vh; /* Full viewport height */
+  min-width: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  color: #ffffff; /* White text for contrast */
+}
+
+.url-form {
+  display: flex;
+  justify-content: center;
+  width: 80%;
+  max-width: 640px; /* Adjust the width of the form to your preference */
+  margin-bottom: 20px;
+}
+
+.youtube-url-input {
+  flex-grow: 1;
+  border: none;
+  padding: 10px 20px;
+  margin-right: -1px; /* Aligns button tightly with input */
+  border-radius: 5px 0 0 5px;
+  font-size: 18px;
+}
+
+.load-video-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #5E35B1; /* Darker shade of purple for the button */
+  color: white;
+  border-radius: 0 5px 5px 0;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.load-video-button:hover {
+  background-color: #4527A0; /* Even darker shade for hover effect */
+}
+
+.youtube-player-container {
+  width: 80%; /* Full width for larger video */
+  max-width: 640px; /* Adjust the max width to fit the video size */
+}
+
+@media (max-width: 768px) {
+  .url-form {
+    width: 90%; /* Adjust form width for smaller screens */
+  }
+
+  .youtube-url-input,
+  .load-video-button {
+    width: 100%; /* Full width for smaller screens */
+  }
+
+  .youtube-player-container {
+    width: 90%; /* Full width for smaller screens */
+  }
+}
