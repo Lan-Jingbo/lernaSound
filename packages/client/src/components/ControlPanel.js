@@ -86,7 +86,7 @@ const ControlPanelJunior = React.memo((props) => {
             </Tooltip>
 
             <Typography id="cutOffFrequency-label" gutterBottom>
-                Cut-off frequency: {cutOffFrequency.toFixed(1)}
+                Cut-off frequency: {cutOffFrequency.toFixed(2)}
             </Typography>
 
 
@@ -97,7 +97,7 @@ const ControlPanelJunior = React.memo((props) => {
                 <Slider
                     value={cutOffFrequency}
                     onChange={(e, newValue) => setCutOffFrequency(newValue)}
-                    step={0.1}
+                    step={0.01}
                     min={0}
                     max={1}
                     valueLabelDisplay="off"
