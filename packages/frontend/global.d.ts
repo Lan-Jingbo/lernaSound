@@ -48,6 +48,11 @@ declare global {
     filteredPeaks: SignalDataItem[];
     removedPeaks: SignalDataItem[];
   }
+
+  interface DanmakuItem {
+    id: number;
+    text: string;
+  }
 }
 
 export {};

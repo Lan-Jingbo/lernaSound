@@ -6,18 +6,17 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { isValidYouTubeUrl } from "@/utils/validation";
 import { useVideoLink } from "@/context/VideoLinkContext";
-
 import BackButton from "@/components/BackButton"; // 导入返回按钮组件
 
 const StartPage: React.FC = () => {
-  const [inputLink, setInputLink] = useState("");
-  const { setVideoLink } = useVideoLink();
+  const [eatingTime, setEatingTime] = useState(30); // minute
+  const { setVideoLink, videoLink } = useVideoLink();
   const [error, setError] = useState("");
   const handleContinue = () => {
-    if (!isValidYouTubeUrl(inputLink)) {
+    if (!isValidYouTubeUrl(videoLink)) {
       setError("Please enter a valid YouTube video link.");
     } else {
-      setVideoLink(inputLink);
+      localStorage.setItem("videoLink", videoLink);
     }
   };
 
@@ -33,11 +32,19 @@ const StartPage: React.FC = () => {
             type="text"
             placeholder="Enter YouTube video link"
             className="p-2 border border-gray-300 rounded mb-4"
-            value={inputLink}
-            onChange={(e) => setInputLink(e.target.value)}
+            value={videoLink}
+            onChange={(e) => setVideoLink(e.target.value)}
           />
           {error && <p className="text-red-500 mb-2">{error}</p>}
-          <Link href={isValidYouTubeUrl(inputLink) ? "/preference" : ""}>
+          <p className="text-lg font-semibold mb-2 relative">Eating Time</p>
+          <input
+            type="text"
+            placeholder="Enter YouTube video link"
+            className="p-2 border border-gray-300 rounded mb-4"
+            value={eatingTime}
+            onChange={(e) => setEatingTime(+e.target.value)}
+          />
+          <Link href={isValidYouTubeUrl(videoLink) ? "/preference" : ""}>
             <Button
               variant="contained"
               color="primary"

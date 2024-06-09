@@ -63,3 +63,52 @@ body {
 .animate-pulse {
   animation: pulse 2s infinite;
 }
+
+/* Danmaku.css */
+.danmaku-container {
+  position: absolute;
+  bottom: 10px; /* 调整到屏幕底部 */
+  right: 10px; /* 调整到屏幕右边 */
+  min-width: 300px; /* 最小宽度 */
+  height: 20%; /* 高度调整为屏幕的20% */
+  overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column; /* 正序排列 */
+  justify-content: flex-end; /* 保证弹幕从下往上 */
+}
+
+.danmaku-item {
+  margin-top: 10px; /* 弹幕之间的间距 */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px; /* 增加左右内边距 */
+  border-radius: 5px;
+  display: inline-flex; /* 使用inline-flex布局 */
+  align-items: center; /* 垂直居中 */
+  animation: fade-in-out 10s ease-in-out forwards; /* 修改动画 */
+  font-size: 20px;
+}
+
+.danmaku-item .emoji {
+  margin-right: 8px; /* 增加表情符号和文字之间的间距 */
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+    transform: translateY(10px); /* 从下方弹出 */
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0); /* 弹出效果 */
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0); /* 停留在中间 */
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px); /* 向上消失 */
+  }
+}

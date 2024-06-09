@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { usePreferences } from "@/context/PreferencesContext";
 import BackButton from "@/components/BackButton";
+import FoodTesting from "@/components/FoodTesting";
+import { VideoProvider } from "@/context/VideoContext";
 
 const features = [
   {
@@ -27,8 +29,25 @@ const features = [
 
 const PreferencesPage = () => {
   const { selectedFeatures, toggleFeature } = usePreferences();
+
+  const [showFoodHuePrompt, setShowFoodHuePrompt] = useState(false);
+
+  useEffect(() => {
+    if (selectedFeatures.includes("Food Hue")) {
+      setShowFoodHuePrompt(true);
+    } else {
+      setShowFoodHuePrompt(false);
+    }
+  }, [selectedFeatures]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedFeatures", JSON.stringify(selectedFeatures));
+  }, [selectedFeatures]);
+
+  // todo 保存preferences
+
   return (
-    <div className="w-full min-h-screen flex flex-col items-start border justify-center p-8 md:p-36">
+    <div className="w-full min-h-screen flex flex-col items-start border justify-center p-8 md:p-36 relative">
       <div className="mb-8">
         <BackButton />
       </div>
@@ -69,6 +88,26 @@ const PreferencesPage = () => {
           Let's get started
         </Button>
       </Link>
+      {showFoodHuePrompt && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative flex flex-col items-center w-full max-w-xl md:max-w-2xl h-2/3 bg-white rounded-lg shadow-lg p-6">
+            <p className="text-lg font-semibold mb-4 text-center">
+              Please show your food to the camera
+            </p>
+            <div className="w-full flex-1 animate-fade-in">
+              <VideoProvider>
+                <FoodTesting />
+              </VideoProvider>
+            </div>
+            <button
+              onClick={() => setShowFoodHuePrompt(false)}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

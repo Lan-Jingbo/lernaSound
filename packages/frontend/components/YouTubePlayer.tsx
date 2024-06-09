@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import YouTube from "react-youtube";
 
 interface YouTubePlayerProps {
@@ -21,7 +21,10 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   };
 
   return (
-    <div className="w-full h-full border-4 rounded " style={{ borderColor }}>
+    <div
+      className="w-full h-full border-[16px] rounded "
+      style={{ borderColor }}
+    >
       <YouTube videoId={videoId} opts={opts} className="w-full h-full" />
     </div>
   );

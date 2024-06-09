@@ -22,7 +22,9 @@ export const useVideoLink = () => {
 export const VideoLinkProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [videoLink, setVideoLink] = useState("");
+  const [videoLink, setVideoLink] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("videoLink") || "" : ""
+  );
 
   return (
     <VideoLinkContext.Provider value={{ videoLink, setVideoLink }}>

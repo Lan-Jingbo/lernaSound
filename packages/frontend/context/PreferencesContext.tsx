@@ -30,6 +30,7 @@ interface PreferencesProviderProps {
 // 创建 Provider 组件
 export const PreferencesProvider = ({ children }: PreferencesProviderProps) => {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  // todo 获取preferences
 
   const toggleFeature = (feature: string) => {
     setSelectedFeatures((prevSelectedFeatures) =>
