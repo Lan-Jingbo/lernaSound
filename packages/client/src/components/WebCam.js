@@ -20,7 +20,6 @@ export default function WebCam({ width, height }) {
   const canvasRef = useRef(null); // our canvas
   const effectRan = useRef(); // our effect
 
-
   const runFacemesh = useCallback(async () => {
     const detect = async (net) => {
       if (
@@ -32,10 +31,9 @@ export default function WebCam({ width, height }) {
         // Get Video Properties
         const video = webcamRef.current.video;
 
-
-        // const videoWidth = width; 
+        // const videoWidth = width;
         // //webcamRef.current.video.videoWidth;
-        // const videoHeight = height; 
+        // const videoHeight = height;
         // //webcamRef.current.video.videoHeight;
 
         // // Set video width
@@ -52,19 +50,25 @@ export default function WebCam({ width, height }) {
         const ctx = canvasRef.current.getContext("2d");
 
         requestAnimationFrame(() => {
-          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-          drawMesh(face, ctx, setNewItem)
-        }
-        );
+          ctx.clearRect(
+            0,
+            0,
+            canvasRef.current.width,
+            canvasRef.current.height
+          );
+          drawMesh(face, ctx, setNewItem);
+        });
       }
     };
     const detectorConfig = {
-      runtime: 'mediapipe', // or 'tfjs'
-      solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
-    }
+      runtime: "mediapipe", // or 'tfjs'
+      solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh",
+    };
 
-
-    const detector = await facemesh.createDetector(facemesh.SupportedModels.MediaPipeFaceMesh, detectorConfig);
+    const detector = await facemesh.createDetector(
+      facemesh.SupportedModels.MediaPipeFaceMesh,
+      detectorConfig
+    );
     await detector.initialize();
     setDetector(detector);
 
@@ -75,7 +79,7 @@ export default function WebCam({ width, height }) {
 
   useEffect(() => {
     if (effectRan.current === false) {
-      runFacemesh()
+      runFacemesh();
     }
 
     return () => {

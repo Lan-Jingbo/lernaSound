@@ -6,8 +6,8 @@ import "../App.css";
 import { useVideo } from "../context/Context";
 
 const VideoPlayer = ({ width, height }) => {
-  const {videoRef, eyePoint, namedKeypoints } = useVideo();
-  const [videoUrl, setVideoUrl] = useState(''); // State to store video URL
+  const { videoRef, eyePoint, namedKeypoints } = useVideo();
+  const [videoUrl, setVideoUrl] = useState(""); // State to store video URL
 
   const localVideoRef = useRef(null);
   const canvasRef = useRef(null); // our canvas
@@ -31,26 +31,28 @@ const VideoPlayer = ({ width, height }) => {
     }
 
     localVideoRef.current.srcObject = videoRef.current.srcObject;
-    var isPlaying = localVideoRef.current.currentTime > 0 && !localVideoRef.current.paused && !localVideoRef.current.ended 
-    && localVideoRef.current.readyState > localVideoRef.current.HAVE_CURRENT_DATA;
+    var isPlaying =
+      localVideoRef.current.currentTime > 0 &&
+      !localVideoRef.current.paused &&
+      !localVideoRef.current.ended &&
+      localVideoRef.current.readyState >
+        localVideoRef.current.HAVE_CURRENT_DATA;
 
     if (!isPlaying) {
-      const playPromise = localVideoRef.current.play()
+      const playPromise = localVideoRef.current.play();
 
       if (playPromise !== null) {
-        playPromise.catch(() => { 
+        playPromise.catch(() => {
           console.log("Discarding runtime error!");
           /* discard runtime error */
-         })
+        });
       }
-
     }
     // localVideoRef.current.play();
-  }, [videoRef.current])
+  }, [videoRef.current]);
 
   useEffect(() => {
     if (eyePoint !== undefined && eyePoint) {
-
       // // Set video width
       localVideoRef.current.width = localVideoRef.current.videoWidth;
       localVideoRef.current.height = localVideoRef.current.videoHeight;
@@ -66,23 +68,33 @@ const VideoPlayer = ({ width, height }) => {
 
       requestAnimationFrame(() => {
         if (canvasRef.current) {
-          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          ctx.clearRect(
+            0,
+            0,
+            canvasRef.current.width,
+            canvasRef.current.height
+          );
           drawOnCanvas(ctx, eyePoint, namedKeypoints);
         }
-      }
-      );
+      });
     }
-  }, [eyePoint?.x])
+  }, [eyePoint?.x]);
 
   return (
     <div className="App-header">
       <div style={{ marginBottom: "20px" }}>
-        <input type="text" value={videoUrl} onChange={handleVideoUrlChange} placeholder="Enter video URL" />
+        <input
+          type="text"
+          value={videoUrl}
+          onChange={handleVideoUrlChange}
+          placeholder="Enter video URL"
+        />
         <button onClick={loadVideo}>Load Video</button>
       </div>
 
       <div style={{ display: "grid" }}>
-        <video ref={localVideoRef}
+        <video
+          ref={localVideoRef}
           className="webcam"
           width={width}
           height={height}
@@ -97,7 +109,7 @@ const VideoPlayer = ({ width, height }) => {
         />
       </div>
     </div>
-  )
+  );
 };
 
 export default VideoPlayer;

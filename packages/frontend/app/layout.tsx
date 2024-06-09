@@ -26,7 +26,7 @@ export default function RootLayout({
           <VideoLinkProvider>
             {children}
             <CameraPermission />
-            <CameraPreview />
+            {/* <CameraPreview /> */}
           </VideoLinkProvider>
         </PreferencesProvider>
       </body>
