@@ -10,7 +10,7 @@
 // bootstrap();
 
 import app from './app';
-import appConfig from './config/app.config';
+import appConfig from './config/app';
 
 const PORT = appConfig.port;
 
