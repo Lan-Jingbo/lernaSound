@@ -47,7 +47,7 @@ const Danmaku: React.FC = () => {
   // 清理超过一定数量的弹幕
   useEffect(() => {
     if (danmakuList.length > 15) {
-      setDanmakuList((prevList) => prevList.slice(prevList.length - 50));
+      setDanmakuList((prevList) => prevList.slice(-15));
     }
   }, [danmakuList]);
 

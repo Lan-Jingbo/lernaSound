@@ -137,7 +137,7 @@ const PlayerPage: React.FC = () => {
       <div className="w-full h-full flex flex-col items-center justify-center">
         {videoId ? (
           <div className="w-full h-full flex items-center justify-center">
-            <YouTubePlayer videoId={videoId} borderColor={borderColor} />
+            <YouTubePlayer videoId={videoId} />
             <DanmakuComp />
           </div>
         ) : (

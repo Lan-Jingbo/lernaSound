@@ -42,29 +42,42 @@ const HomePage = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-screen text-center bg-white">
-      <div className="bg-white p-8 border shadow-lg rounded-lg animate-fade-in w-1/2">
+      <div className="p-8 border shadow-lg rounded-lg animate-fade-in w-full max-w-lg bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
+          <span role="img" aria-label="wave" className="mr-2">
+            👋
+          </span>{" "}
           Welcome to {title}
         </h1>
         {/* 输入你的ID */}
-
-        <div>
+        <div className="mb-4">
           <TextField
             label="Enter your username"
             variant="outlined"
             value={username}
             onChange={handleChange}
-            className="mb-4"
+            fullWidth
+            InputProps={{
+              style: {
+                backgroundColor: "#ffffff",
+                borderRadius: "8px",
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: "#666666",
+              },
+            }}
           />
         </div>
-
         <Link
           href="/start"
           onClick={() => {
             handleLogin();
           }}
+          passHref
         >
-          <Button variant="contained" color="primary" size="large">
+          <Button variant="contained" color="primary" size="large" fullWidth>
             Get Started
           </Button>
         </Link>

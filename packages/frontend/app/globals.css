@@ -67,10 +67,10 @@ body {
 /* Danmaku.css */
 .danmaku-container {
   position: absolute;
-  bottom: 10px; /* 调整到屏幕底部 */
-  right: 10px; /* 调整到屏幕右边 */
+  bottom: 40px; /* 调整到屏幕底部 */
+  right: 30px; /* 调整到屏幕右边 */
   min-width: 300px; /* 最小宽度 */
-  height: 20%; /* 高度调整为屏幕的20% */
+  height: 199px; /* 高度调整为屏幕的20% */
   overflow: hidden;
   pointer-events: none;
   display: flex;
