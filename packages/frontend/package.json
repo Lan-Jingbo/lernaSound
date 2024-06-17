@@ -12,6 +12,9 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.19",
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow/tfjs": "^4.20.0",
+    "ml-kmeans": "^6.0.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18"
