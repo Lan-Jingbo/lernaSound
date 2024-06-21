@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { useVideo } from "@/context/VideoContext";
 import { useFaceMesh } from "@/hooks/useFaceMesh";
 import { drawOnCanvas } from "@/utils/testing";
-import {
-  ChewingFrequencyProvider,
-  useChewingFrequency,
-} from "@/context/ChewingFrequencyContext";
 import useSignalProcessing from "@/hooks/useSignalProcessing";
 import { avgFrequency } from "@/utils/avgFrequency";
 
-const ChewingTesting: React.FC = () => {
+interface ChewingTestingProps {
+  onFrequencyUpdate: (frequency: number | null) => void;
+}
+
+const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) => {
   const [maximized, setMaximized] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // our canvas
   const { videoRef } = useVideo();
@@ -29,14 +29,15 @@ const ChewingTesting: React.FC = () => {
     itemsNo
   );
 
-  // 设置咀嚼频率值的逻辑
   useEffect(() => {
     const calculateChewingFrequency = () => {
-      setChewingFrequency(avgFrequency(signalProcessingData.filteredPeaks, 5));
+      const frequency = avgFrequency(signalProcessingData.filteredPeaks, 5);
+      setChewingFrequency(frequency);
+      onFrequencyUpdate(frequency); // Call the callback function with the updated frequency
     };
-    // 执行计算咀嚼频率的逻辑
+
     calculateChewingFrequency();
-  }, [animate]);
+  }, [animate, onFrequencyUpdate]);
 
   useEffect(() => {
     console.log(chewingFrequency);
@@ -78,13 +79,11 @@ const ChewingTesting: React.FC = () => {
     };
   }, [eyePoint, namedKeypoints, videoRef]);
 
-  // 切换最大化和最小化
   const toggleMaximize = () => {
     setMaximized(!maximized);
   };
 
   return (
-    // <ChewingFrequencyProvider>
     <div
       onClick={toggleMaximize}
       className="relative w-full h-full flex justify-center items-center"
@@ -101,7 +100,6 @@ const ChewingTesting: React.FC = () => {
         className="absolute top-0 left-0 w-full h-full object-contain z-20 pointer-events-none"
       />
     </div>
-    // </ChewingFrequencyProvider>
   );
 };
 
