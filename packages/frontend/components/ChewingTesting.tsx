@@ -3,47 +3,76 @@ import React, { useEffect, useRef, useState } from "react";
 import { useVideo } from "@/context/VideoContext";
 import { useFaceMesh } from "@/hooks/useFaceMesh";
 import { drawOnCanvas } from "@/utils/testing";
-import {
-  ChewingFrequencyProvider,
-  useChewingFrequency,
-} from "@/context/ChewingFrequencyContext";
 import useSignalProcessing from "@/hooks/useSignalProcessing";
 import { avgFrequency } from "@/utils/avgFrequency";
 
-const ChewingTesting: React.FC = () => {
+interface ChewingTestingProps {
+  onFrequencyUpdate?: (frequency: number | null) => void; // Make this prop optional
+}
+
+const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) => {
   const [maximized, setMaximized] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // our canvas
   const { videoRef } = useVideo();
-  const { eyePoint, namedKeypoints, animate, euclideanDistance } =
+  const { leftEyePoint, rightEyePoint, namedKeypoints, animate, euclideanDistance, lookingAtScreen } =
     useFaceMesh(videoRef);
 
   const [chewingFrequency, setChewingFrequency] = useState<number | null>(null);
   const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
-  const [itemsNo, setItemsNo] = useState(160);
+  const [itemsNo, setItemsNo] = useState(240);
+  const [isGazing, setIsGazing] = useState(false);
+  const [gazingStartTime, setGazingStartTime] = useState<number | null>(null);
+  const [reminder, setReminder] = useState<string | null>(null);
 
   const signalProcessingData = useSignalProcessing(
     animate,
-    eyePoint,
+    leftEyePoint,
+    rightEyePoint,
     euclideanDistance,
     cutOffFrequency,
     itemsNo
   );
 
-  // 设置咀嚼频率值的逻辑
+  // Define a default onFrequencyUpdate function if not provided
+  const defaultOnFrequencyUpdate = (frequency: number | null) => {
+    console.log("Updated Frequency:", frequency);
+  };
+
   useEffect(() => {
     const calculateChewingFrequency = () => {
-      setChewingFrequency(avgFrequency(signalProcessingData.filteredPeaks, 5));
+      const frequency = avgFrequency(signalProcessingData.filteredPeaks, 5);
+      setChewingFrequency(frequency);
+      (onFrequencyUpdate || defaultOnFrequencyUpdate)(frequency); // Use the provided function or the default one
     };
-    // 执行计算咀嚼频率的逻辑
+
     calculateChewingFrequency();
-  }, [animate]);
+  }, [animate, onFrequencyUpdate]);
 
   useEffect(() => {
     console.log(chewingFrequency);
   }, [chewingFrequency]);
 
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (lookingAtScreen) {
+      if (!isGazing) {
+        setIsGazing(true);
+        setGazingStartTime(Date.now());
+      } else if (gazingStartTime) {
+        const elapsedTime = (Date.now() - gazingStartTime) / 1000; // time in seconds
+        if (elapsedTime > 10 && (chewingFrequency === null || chewingFrequency < 10)) {
+          setReminder("Please don't forget to chew your food while watching the video.");
+        } else {
+          setReminder(null);
+        }
+      }
+    } else {
+      setIsGazing(false);
+      setGazingStartTime(null);
+    }
+  }, [lookingAtScreen, chewingFrequency]);
+
+  useEffect(() => {
+    if (!videoRef.current || typeof window === "undefined") return;
 
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
@@ -56,9 +85,20 @@ const ChewingTesting: React.FC = () => {
     };
 
     const drawCanvas = () => {
-      if (canvasRef.current && eyePoint && namedKeypoints && ctx) {
+      if (canvasRef.current && leftEyePoint && rightEyePoint && namedKeypoints && ctx) {
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        drawOnCanvas(ctx, eyePoint, namedKeypoints);
+        drawOnCanvas(ctx, leftEyePoint, rightEyePoint, namedKeypoints);
+
+        // Display whether the user is looking at the screen
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "red";
+        ctx.fillText(lookingAtScreen ? "Looking at screen" : "Not looking at screen", 10, 30);
+
+        // Display reminder
+        if (reminder) {
+          ctx.fillStyle = "yellow";
+          ctx.fillText(reminder, 10, 50);
+        }
       }
       requestAnimationFrame(drawCanvas);
     };
@@ -76,15 +116,13 @@ const ChewingTesting: React.FC = () => {
       }
       cancelAnimationFrame(animationId);
     };
-  }, [eyePoint, namedKeypoints, videoRef]);
+  }, [leftEyePoint, rightEyePoint, namedKeypoints, lookingAtScreen, reminder, videoRef]);
 
-  // 切换最大化和最小化
   const toggleMaximize = () => {
     setMaximized(!maximized);
   };
 
   return (
-    // <ChewingFrequencyProvider>
     <div
       onClick={toggleMaximize}
       className="relative w-full h-full flex justify-center items-center"
@@ -101,7 +139,6 @@ const ChewingTesting: React.FC = () => {
         className="absolute top-0 left-0 w-full h-full object-contain z-20 pointer-events-none"
       />
     </div>
-    // </ChewingFrequencyProvider>
   );
 };
 

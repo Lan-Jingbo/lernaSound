@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from "react";
-
 import findPeaksP3 from "@/utils/findPeaksP3";
 
 function pointLowPassFilter(
@@ -11,9 +10,7 @@ function pointLowPassFilter(
   const RC = 1 / (2 * Math.PI * cutoffFreq);
   const dt = 1 / sampleRate;
   const alpha = dt / (dt + RC);
-
   let current = alpha * newItem.value + (1 - alpha) * prev;
-
   return current;
 }
 
@@ -70,7 +67,8 @@ function calculateCorrelation(arr1: any[], arr2: any[], windowSize: number) {
 
 export default function useSignalProcessing(
   animate: boolean,
-  eyePoint: { x: number; y: number } | null,
+  leftEyePoint: { x: number; y: number } | null,
+  rightEyePoint: { x: number; y: number } | null,
   newItem: SignalDataItem | null,
   cutOffFrequency: number,
   itemsNo: number
@@ -124,7 +122,6 @@ export default function useSignalProcessing(
       const windowSize = 30;
       const threshold = 0.6; // set a threshold for the correlation coefficient
 
-      console.log(filteredData, eyePointDistance);
       const correlationCoefficients = calculateCorrelation(
         filteredData,
         eyePointDistance,
@@ -164,9 +161,9 @@ export default function useSignalProcessing(
       ]);
     }
 
-    if (eyePoint) {
+    if (leftEyePoint && rightEyePoint) {
       const newEyePointDistance = {
-        value: euclideanDistance(eyePoint.x, eyePoint.y),
+        value: euclideanDistance(leftEyePoint.x, leftEyePoint.y) + euclideanDistance(rightEyePoint.x, rightEyePoint.y),
         time: newItem.time,
       };
       updateDataRef("eyePointDistance", [

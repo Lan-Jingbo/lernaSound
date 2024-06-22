@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getMesh } from "@/utils/testing";
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
+import { MeshResult, Prediction, Keypoint } from "@/types"; // Adjust the path as necessary
+import { calculateEAR, isLookingAtScreen } from "@/utils/eyeUtils"; // Import the functions
 
 export const useFaceMesh = (
   videoRef: React.RefObject<HTMLVideoElement> | null
 ) => {
   const effectRan = useRef(false);
   const [animate, setAnimate] = useState(false);
+  const [lookingAtScreen, setLookingAtScreen] = useState(false);
   const meshDataRef = useRef<MeshResult>({
     euclideanDistance: null,
-    eyePoint: null,
+    leftEyePoint: null,
+    rightEyePoint: null,
     namedKeypoints: null,
   });
 
@@ -17,20 +21,30 @@ export const useFaceMesh = (
   const intervalRef = useRef<number | null>(null);
 
   const runFacemesh = useCallback(async () => {
+    if (typeof window === "undefined" || typeof navigator === "undefined") return; // Ensure code runs only on client side
+
     const detect = async (net: facemesh.FaceLandmarksDetector) => {
       if (videoRef && videoRef.current && videoRef.current.readyState === 4) {
         const video = videoRef.current;
         const face = await net.estimateFaces(video);
 
         if (face) {
-          const { euclideanDistance, eyePoint, namedKeypoints } = getMesh(
+          const { euclideanDistance, leftEyePoint, rightEyePoint, namedKeypoints } = getMesh(
             face as Prediction[]
           );
           meshDataRef.current = {
             euclideanDistance,
-            eyePoint,
+            leftEyePoint,
+            rightEyePoint,
             namedKeypoints,
           };
+
+          // Check if the user is looking at the screen
+          if (namedKeypoints && namedKeypoints["leftEye"] && namedKeypoints["rightEye"]) {
+            const isLooking = isLookingAtScreen(namedKeypoints["leftEye"], namedKeypoints["rightEye"]);
+            setLookingAtScreen(isLooking);
+          }
+
           setAnimate((prevCheck) => !prevCheck);
         }
       }
@@ -54,6 +68,7 @@ export const useFaceMesh = (
 
   useEffect(() => {
     if (!videoRef || !videoRef.current) return;
+    if (typeof window === "undefined" || typeof navigator === "undefined") return; // Ensure code runs only on client side
 
     if (effectRan.current === false) {
       runFacemesh();
@@ -71,8 +86,10 @@ export const useFaceMesh = (
     () => ({
       animate,
       euclideanDistance: meshDataRef.current.euclideanDistance,
-      eyePoint: meshDataRef.current.eyePoint,
+      leftEyePoint: meshDataRef.current.leftEyePoint,
+      rightEyePoint: meshDataRef.current.rightEyePoint,
       namedKeypoints: meshDataRef.current.namedKeypoints,
+      lookingAtScreen, // Return the state indicating if looking at the screen
     }),
     [animate]
   );
