@@ -14,8 +14,10 @@
     "@mui/material": "^5.15.19",
     "@tensorflow-models/coco-ssd": "^2.2.3",
     "@tensorflow/tfjs": "^4.20.0",
+    "@types/quantize": "^1.0.2",
     "ml-kmeans": "^6.0.0",
     "next": "14.2.3",
+    "quantize": "^1.0.2",
     "react": "^18",
     "react-dom": "^18"
   },

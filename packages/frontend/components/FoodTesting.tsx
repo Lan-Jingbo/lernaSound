@@ -1,66 +1,81 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useVideo } from "@/context/VideoContext";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import "@tensorflow/tfjs";
+import quantize, { RgbPixel } from "quantize";
+import { useVideo } from "@/context/VideoContext";
 
 const FoodTesting: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null); // our canvas
   const { videoRef } = useVideo();
   const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
+  const [dominantColors, setDominantColors] = useState<number[][]>([]);
+  const [foodDetected, setFoodDetected] = useState<boolean>(false);
 
   useEffect(() => {
     const loadModel = async () => {
       const loadedModel = await cocoSsd.load();
       setModel(loadedModel);
-      console.log("Model loaded");
     };
 
     loadModel();
   }, []);
 
   useEffect(() => {
-    if (!videoRef.current || !model) return;
+    if (!videoRef.current) return;
 
-    const ctx = canvasRef.current?.getContext("2d");
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d", { willReadFrequently: true });
+
     if (!ctx) return;
 
     const handleMetadataLoaded = () => {
-      if (videoRef.current && canvasRef.current) {
-        canvasRef.current.width = videoRef.current.videoWidth;
-        canvasRef.current.height = videoRef.current.videoHeight;
+      if (videoRef.current && canvas) {
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
       }
     };
 
     const detectFood = async () => {
-      if (videoRef.current && canvasRef.current && model) {
-        console.log(videoRef.current.width, videoRef.current.height);
+      if (videoRef.current && canvas && model) {
+        if (videoRef.current.videoWidth === 0 || videoRef.current.videoHeight === 0) {
+          requestAnimationFrame(detectFood);
+          return;
+        }
+
         const predictions = await model.detect(videoRef.current);
 
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        ctx.drawImage(
-          videoRef.current,
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-        let foodDetected = false;
-        console.log(predictions, "ddd");
+        const foodClasses = ['banana', 'apple', 'orange', 'sandwich', 'cake', 'hot dog', 'pizza', 'donut', 'carrot', 'bottle', 'bowl', 'cup', 'spoon', 'fork'];
+        const foodPixels: RgbPixel[] = [];
+
         predictions.forEach((prediction: cocoSsd.DetectedObject) => {
-          // if (prediction.class === "bowl" && prediction.score > 0.5) {
-          if (prediction.score > 0.5) {
-            foodDetected = true;
+          if (prediction.score > 0.5 && foodClasses.includes(prediction.class)) {
+            setFoodDetected(true);
             const [x, y, width, height] = prediction.bbox;
             ctx.strokeStyle = "green";
             ctx.lineWidth = 4;
             ctx.strokeRect(x, y, width, height);
 
             const imageData = ctx.getImageData(x, y, width, height);
-            analyzeColors(imageData);
+            for (let i = 0; i < imageData.data.length; i += 4) {
+              const r = imageData.data[i];
+              const g = imageData.data[i + 1];
+              const b = imageData.data[i + 2];
+              foodPixels.push([r, g, b]);
+            }
           }
         });
+
+        if (foodPixels.length > 0) {
+          const colorMap = quantize(foodPixels, 5);
+          if (colorMap){
+            const colors = colorMap.palette();
+            setDominantColors(colors);
+          }
+        }
 
         const message = document.getElementById("message");
         if (message) {
@@ -74,38 +89,6 @@ const FoodTesting: React.FC = () => {
       }
 
       requestAnimationFrame(detectFood);
-    };
-
-    const analyzeColors = (imageData: ImageData) => {
-      const colorCounts: { [key: string]: number } = {};
-      const totalPixels = imageData.data.length / 4;
-
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const r = imageData.data[i];
-        const g = imageData.data[i + 1];
-        const b = imageData.data[i + 2];
-        const color = `rgb(${r},${g},${b})`;
-
-        if (colorCounts[color]) {
-          colorCounts[color]++;
-        } else {
-          colorCounts[color] = 1;
-        }
-      }
-
-      const sortedColors = Object.entries(colorCounts).sort(
-        (a, b) => b[1] - a[1]
-      );
-      const dominantColor = sortedColors[0][0];
-      const dominantColorPercentage = (
-        (sortedColors[0][1] / totalPixels) *
-        100
-      ).toFixed(2);
-
-      const message = document.getElementById("message");
-      if (message) {
-        message.textContent = `Dominant color: ${dominantColor} (${dominantColorPercentage}% of the food)`;
-      }
     };
 
     videoRef.current.addEventListener("loadedmetadata", handleMetadataLoaded);
@@ -136,10 +119,28 @@ const FoodTesting: React.FC = () => {
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full object-contain z-20 pointer-events-none"
       />
+
       <div
         id="message"
         className="absolute bottom-10 left-0 w-full text-center text-red-600 z-30"
       ></div>
+
+      <div className="absolute bottom-4 left-4 z-30">
+        <h3>Detected Colors:</h3>
+        <div style={{ display: 'flex' }}>
+          {dominantColors.map((color, index) => (
+            <div
+              key={index}
+              style={{
+                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                width: '50px',
+                height: '50px',
+                marginRight: '5px',
+              }}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
