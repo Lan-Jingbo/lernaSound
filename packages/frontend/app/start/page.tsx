@@ -5,14 +5,12 @@ import { Button } from "@mui/material";
 import Link from "next/link";
 import React, { useState } from "react";
 import { isValidYouTubeUrl } from "@/utils/validation";
-import { useVideoLink } from "@/context/VideoLinkContext";
 import BackButton from "@/components/BackButton"; // 导入返回按钮组件
 import { useData } from "@/context/DataContext";
 
 const StartPage: React.FC = () => {
-  const { userInfo, setUserInfo } = useData();
+  const { userInfo, setUserInfo, setVideoLink, videoLink } = useData();
   const [eatingTime, setEatingTime] = useState(userInfo.eatingTime || ""); // minute
-  const { setVideoLink, videoLink } = useVideoLink();
   const [error, setError] = useState("");
   const handleContinue = () => {
     if (!isValidYouTubeUrl(videoLink)) {

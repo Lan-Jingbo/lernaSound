@@ -1,5 +1,5 @@
 // context/VideoContext.tsx
-
+"use client";
 import React, {
   createContext,
   useState,

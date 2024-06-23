@@ -9,6 +9,8 @@ type DataContextType = {
   setVideoLink: React.Dispatch<React.SetStateAction<string>>;
   userInfo: UserInfo;
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
+  chewingFrequency: number;
+  setChewingFrequency: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -24,6 +26,7 @@ export const DataProvider: React.FC<{
     id: null,
     username: "",
   });
+  const [chewingFrequency, setChewingFrequency] = useState<number>(0);
 
   return (
     <DataContext.Provider
@@ -34,6 +37,8 @@ export const DataProvider: React.FC<{
         setVideoLink,
         userInfo,
         setUserInfo,
+        chewingFrequency,
+        setChewingFrequency,
       }}
     >
       {children}

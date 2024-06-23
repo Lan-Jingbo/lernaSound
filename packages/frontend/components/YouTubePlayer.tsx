@@ -16,7 +16,6 @@ interface YouTubePlayerProps {
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoId }) => {
   const playerRef = useRef<any>(null);
   const { dominantColors, userInfo } = useData();
-  console.log(dominantColors);
 
   const targetPlaybackRateRef = useRef<number>(0.83);
   const [autoRateChange, setAutoRateChange] = useState(false);

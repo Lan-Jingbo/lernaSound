@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { PreferencesProvider } from "@/context/PreferencesContext";
-import { VideoLinkProvider } from "@/context/VideoLinkContext";
 import { DataProvider } from "@/context/DataContext";
+import { VideoProvider } from "@/context/VideoContext";
 
 import CameraPermission from "@/components/CameraPermission";
 
@@ -24,11 +24,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <DataProvider>
           <PreferencesProvider>
-            <VideoLinkProvider>
+            <VideoProvider>
               {children}
               <CameraPermission />
-              {/* <CameraPreview /> */}
-            </VideoLinkProvider>
+            </VideoProvider>
           </PreferencesProvider>
         </DataProvider>
       </body>

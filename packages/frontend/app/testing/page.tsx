@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import ChewingTesting from "@/components/ChewingTesting";
 import { VideoProvider } from "@/context/VideoContext";
-import { ChewingFrequencyProvider } from "@/context/ChewingFrequencyContext";
 import EyeJawDistanceChart from "@/components/EyeJawDistanceChart";
 import Resizer from "@/components/Resizer";
 
@@ -23,9 +22,7 @@ const TestingPage = () => {
     <VideoProvider>
       <div className="w-full min-h-screen flex flex-col">
         <div style={{ height: `${topHeight}px` }} className="relative">
-          {/* <ChewingFrequencyProvider> */}
           <ChewingTesting />
-          {/* </ChewingFrequencyProvider> */}
         </div>
         <Resizer onResize={handleResize} />
         <div style={{ height: `${bottomHeight}px` }} className="relative">
