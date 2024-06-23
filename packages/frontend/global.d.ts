@@ -53,6 +53,14 @@ declare global {
     id: number;
     text: string;
   }
+
+  // 定义用户信息
+  interface UserInfo {
+    id: number | null;
+    username: string;
+    eatingTime?: number;
+    preferences?: Array<string>;
+  }
 }
 
 export {};

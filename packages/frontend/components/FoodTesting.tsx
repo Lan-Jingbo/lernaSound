@@ -4,13 +4,14 @@ import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import "@tensorflow/tfjs";
 import quantize, { RgbPixel } from "quantize";
 import { useVideo } from "@/context/VideoContext";
+import { useData } from "@/context/DataContext";
 
 const FoodTesting: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // our canvas
   const { videoRef } = useVideo();
   const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
-  const [dominantColors, setDominantColors] = useState<number[][]>([]);
   const [foodDetected, setFoodDetected] = useState<boolean>(false);
+  const { setDominantColors } = useData();
 
   useEffect(() => {
     const loadModel = async () => {
@@ -38,7 +39,10 @@ const FoodTesting: React.FC = () => {
 
     const detectFood = async () => {
       if (videoRef.current && canvas && model) {
-        if (videoRef.current.videoWidth === 0 || videoRef.current.videoHeight === 0) {
+        if (
+          videoRef.current.videoWidth === 0 ||
+          videoRef.current.videoHeight === 0
+        ) {
           requestAnimationFrame(detectFood);
           return;
         }
@@ -48,11 +52,29 @@ const FoodTesting: React.FC = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-        const foodClasses = ['banana', 'apple', 'orange', 'sandwich', 'cake', 'hot dog', 'pizza', 'donut', 'carrot', 'bottle', 'bowl', 'cup', 'spoon', 'fork'];
+        const foodClasses = [
+          "banana",
+          "apple",
+          "orange",
+          "sandwich",
+          "cake",
+          "hot dog",
+          "pizza",
+          "donut",
+          "carrot",
+          "bottle",
+          "bowl",
+          "cup",
+          "spoon",
+          "fork",
+        ];
         const foodPixels: RgbPixel[] = [];
 
         predictions.forEach((prediction: cocoSsd.DetectedObject) => {
-          if (prediction.score > 0.5 && foodClasses.includes(prediction.class)) {
+          if (
+            prediction.score > 0.5 &&
+            foodClasses.includes(prediction.class)
+          ) {
             setFoodDetected(true);
             const [x, y, width, height] = prediction.bbox;
             ctx.strokeStyle = "green";
@@ -71,7 +93,7 @@ const FoodTesting: React.FC = () => {
 
         if (foodPixels.length > 0) {
           const colorMap = quantize(foodPixels, 5);
-          if (colorMap){
+          if (colorMap) {
             const colors = colorMap.palette();
             setDominantColors(colors);
           }
@@ -108,39 +130,21 @@ const FoodTesting: React.FC = () => {
 
   return (
     <div className="relative w-full h-full flex justify-center items-center">
+      <div
+        id="message"
+        className="absolute top-0 w-full text-center text-red-600 z-30"
+      ></div>
       <video
         ref={videoRef}
         id="video"
         autoPlay={true}
-        className="absolute top-0 left-0 w-full h-full object-contain z-10"
+        className="absolute top-8 left-0 w-full h-full object-contain z-10"
       />
 
       <canvas
         ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full object-contain z-20 pointer-events-none"
+        className="absolute top-8 left-0 w-full h-full object-contain z-20 pointer-events-none"
       />
-
-      <div
-        id="message"
-        className="absolute bottom-10 left-0 w-full text-center text-red-600 z-30"
-      ></div>
-
-      <div className="absolute bottom-4 left-4 z-30">
-        <h3>Detected Colors:</h3>
-        <div style={{ display: 'flex' }}>
-          {dominantColors.map((color, index) => (
-            <div
-              key={index}
-              style={{
-                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                width: '50px',
-                height: '50px',
-                marginRight: '5px',
-              }}
-            />
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

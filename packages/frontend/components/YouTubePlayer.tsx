@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
+import { useData } from "@/context/DataContext";
 
 interface BorderColor {
   color: string;
@@ -12,19 +13,10 @@ interface YouTubePlayerProps {
   borderColors?: BorderColor[];
 }
 
-const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
-  videoId,
-  borderColors = [
-    { color: "rgba(255, 0, 0, 1)", percentage: "10%" },
-    { color: "rgba(255, 127, 0, 1)", percentage: "20%" },
-    { color: "rgba(255, 255, 0, 1)", percentage: "30%" },
-    { color: "rgba(0, 255, 0, 1)", percentage: "40%" },
-    { color: "rgba(0, 0, 255, 1)", percentage: "50%" },
-    { color: "rgba(75, 0, 130, 1)", percentage: "60%" },
-    { color: "rgba(139, 0, 255, 1)", percentage: "70%" },
-  ],
-}) => {
+const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoId }) => {
   const playerRef = useRef<any>(null);
+  const { dominantColors, userInfo } = useData();
+  console.log(dominantColors);
 
   const targetPlaybackRateRef = useRef<number>(0.83);
   const [autoRateChange, setAutoRateChange] = useState(false);
@@ -43,7 +35,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   };
 
   useEffect(() => {
-    const totalTime = 20 * 60 * 1000; // 20分钟
+    const totalTime = (userInfo.eatingTime || 0) * 60 * 1000; // 20分钟
     const intervalTime = 1000; // 每秒更新一次
     const steps = totalTime / intervalTime;
     const opacityStep = 1 / steps;
@@ -65,29 +57,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const onPlayerReady = (event: any) => {
     playerRef.current = event.target;
     startReducingPlaybackRate();
-
-    const iframe = playerRef.current.getIframe();
-    const playerContainer = iframe?.parentElement;
-
-    if (playerContainer) {
-      const observer = new MutationObserver((mutationsList, observer) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === "childList") {
-            const controls = playerContainer.querySelector(
-              ".ytp-right-controls"
-            );
-            console.log(playerContainer, "playerContainer");
-            console.log(controls, "controlscontrols");
-            if (controls) {
-              addCustomButton(controls);
-              observer.disconnect();
-            }
-          }
-        }
-      });
-
-      observer.observe(playerContainer, { childList: true, subtree: true });
-    }
   };
 
   const onPlayerStateChange = (event: any) => {
@@ -122,8 +91,8 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }, 1000);
   };
 
-  const borderColor = `linear-gradient(45deg, ${borderColors
-    .map((item) => `${item.color.slice(0, -2)}${opacity}) ${item.percentage}`)
+  const borderColor = `linear-gradient(45deg, ${dominantColors
+    .map((item) => `rgba(${item[0]}, ${item[1]}, ${item[2]}, ${opacity})`)
     .join(", ")})`;
 
   const addCustomButton = (controls: Element) => {

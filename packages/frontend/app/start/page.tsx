@@ -7,9 +7,11 @@ import React, { useState } from "react";
 import { isValidYouTubeUrl } from "@/utils/validation";
 import { useVideoLink } from "@/context/VideoLinkContext";
 import BackButton from "@/components/BackButton"; // 导入返回按钮组件
+import { useData } from "@/context/DataContext";
 
 const StartPage: React.FC = () => {
-  const [eatingTime, setEatingTime] = useState(30); // minute
+  const { userInfo, setUserInfo } = useData();
+  const [eatingTime, setEatingTime] = useState(userInfo.eatingTime || ""); // minute
   const { setVideoLink, videoLink } = useVideoLink();
   const [error, setError] = useState("");
   const handleContinue = () => {
@@ -18,6 +20,14 @@ const StartPage: React.FC = () => {
     } else {
       localStorage.setItem("videoLink", videoLink);
     }
+  };
+  const updateUserInfo = (e: { target: { value: string | number } }) => {
+    console.log(e.target.value);
+    setEatingTime(+e.target.value);
+    setUserInfo({
+      ...userInfo,
+      eatingTime: +e.target.value,
+    });
   };
 
   return (
@@ -39,10 +49,10 @@ const StartPage: React.FC = () => {
           <p className="text-lg font-semibold mb-2 relative">Eating Time</p>
           <input
             type="text"
-            placeholder="Enter YouTube video link"
+            placeholder="Input your eating time(minutes)"
             className="p-2 border border-gray-300 rounded mb-4"
             value={eatingTime}
-            onChange={(e) => setEatingTime(+e.target.value)}
+            onChange={updateUserInfo}
           />
           <Link href={isValidYouTubeUrl(videoLink) ? "/preference" : ""}>
             <Button

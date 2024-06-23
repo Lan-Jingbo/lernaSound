@@ -3,9 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { PreferencesProvider } from "@/context/PreferencesContext";
 import { VideoLinkProvider } from "@/context/VideoLinkContext";
+import { DataProvider } from "@/context/DataContext";
 
 import CameraPermission from "@/components/CameraPermission";
-import CameraPreview from "@/components/CameraPreview";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,13 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <PreferencesProvider>
-          <VideoLinkProvider>
-            {children}
-            <CameraPermission />
-            {/* <CameraPreview /> */}
-          </VideoLinkProvider>
-        </PreferencesProvider>
+        <DataProvider>
+          <PreferencesProvider>
+            <VideoLinkProvider>
+              {children}
+              <CameraPermission />
+              {/* <CameraPreview /> */}
+            </VideoLinkProvider>
+          </PreferencesProvider>
+        </DataProvider>
       </body>
     </html>
   );

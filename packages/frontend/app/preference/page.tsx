@@ -7,6 +7,7 @@ import { usePreferences } from "@/context/PreferencesContext";
 import BackButton from "@/components/BackButton";
 import FoodTesting from "@/components/FoodTesting";
 import { VideoProvider } from "@/context/VideoContext";
+import { useData } from "@/context/DataContext";
 
 const features = [
   {
@@ -29,6 +30,7 @@ const features = [
 
 const PreferencesPage = () => {
   const { selectedFeatures, toggleFeature } = usePreferences();
+  const { dominantColors } = useData();
 
   const [showFoodHuePrompt, setShowFoodHuePrompt] = useState(false);
 
@@ -99,8 +101,26 @@ const PreferencesPage = () => {
                 <FoodTesting />
               </VideoProvider>
             </div>
+
+            <div className="mt-4 z-30">
+              {/* <h3>Detected Colors:</h3> */}
+              <div style={{ display: "flex" }}>
+                {dominantColors.map((color, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                      width: "50px",
+                      height: "50px",
+                      marginRight: "5px",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
             <button
               onClick={() => setShowFoodHuePrompt(false)}
+              disabled={!dominantColors.length}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300"
             >
               Done
