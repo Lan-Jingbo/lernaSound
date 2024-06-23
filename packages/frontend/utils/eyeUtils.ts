@@ -1,4 +1,4 @@
-import { Keypoint } from "@/types"; // Adjust the import path as necessary
+import { Keypoint } from "@/types/types"; // Adjust the import path as necessary
 
 export function calculateEAR(eye: Keypoint[]): number {
   const euclideanDistance = (point1: { x: number; y: number }, point2: { x: number; y: number }): number => {

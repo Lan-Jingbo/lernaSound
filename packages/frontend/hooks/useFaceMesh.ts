@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getMesh } from "@/utils/testing";
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
-import { MeshResult, Prediction, Keypoint } from "@/types"; // Adjust the path as necessary
+import { MeshResult, Prediction, Keypoint } from "@/types/types"; // Adjust the path as necessary
 import { calculateEAR, isLookingAtScreen } from "@/utils/eyeUtils"; // Import the functions
 
 export const useFaceMesh = (
