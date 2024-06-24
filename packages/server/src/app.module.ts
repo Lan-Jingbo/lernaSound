@@ -1,12 +1,12 @@
-import { AppController } from './app.controller';
+// src/app.module.ts
+import { Module } from '@nestjs/common';
+import { FirebaseConfigModule } from './config/firebase.config';
 import { AppService } from './app.service';
-import { AudioController } from './audio/audio.controller';
-import { ConfigModule } from '@nestjs/config';
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { AppController } from './app.controller';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
-  controllers: [AppController, AudioController],
+  imports: [AppModule],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

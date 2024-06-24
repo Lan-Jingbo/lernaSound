@@ -1,21 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "target": "ES6",                // Specify ECMAScript target version
+    "module": "commonjs",           // Use CommonJS module system
+    "strict": true,                 // Enable strict type-checking options
+    "esModuleInterop": true,        // Enables interoperability between CommonJS and ES modules
+    "skipLibCheck": true,           // Skip type checking of all declaration files
+    "forceConsistentCasingInFileNames": true, // Consistent casing for imports
+    "typeRoots": ["./node_modules/@types"], // Include type definitions from node_modules
+    "baseUrl": ".",                 // Base directory for resolving non-relative module names
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "resolveJsonModule": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
