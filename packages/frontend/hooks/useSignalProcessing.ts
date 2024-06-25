@@ -119,7 +119,7 @@ export default function useSignalProcessing(
       const peaks = peakIndexes.map((i) => filteredData[i]);
       updateDataRef("peaks", peaks);
 
-      const windowSize = 30;
+      const windowSize = 20;
       const threshold = 0.6; // set a threshold for the correlation coefficient
 
       const correlationCoefficients = calculateCorrelation(
@@ -159,21 +159,21 @@ export default function useSignalProcessing(
         ...filteredData.slice(-itemsNo),
         newFilteredItem,
       ]);
-    }
 
-    if (leftEyePoint && rightEyePoint) {
-      const newEyePointDistance = {
-        value: euclideanDistance(leftEyePoint.x, leftEyePoint.y) + euclideanDistance(rightEyePoint.x, rightEyePoint.y),
-        time: newItem.time,
-      };
-      updateDataRef("eyePointDistance", [
-        ...eyePointDistance.slice(-itemsNo),
-        newEyePointDistance,
-      ]);
+      if (leftEyePoint && rightEyePoint) {
+        const newEyePointDistance = {
+          value: euclideanDistance(leftEyePoint.x, leftEyePoint.y) + euclideanDistance(rightEyePoint.x, rightEyePoint.y),
+          time: newItem.time,
+        };
+        updateDataRef("eyePointDistance", [
+          ...eyePointDistance.slice(-itemsNo),
+          newEyePointDistance,
+        ]);
+      }
     }
 
     updateDataRef("data", [...data.slice(-itemsNo), newItem]);
-  }, [animate]);
+  }, [animate, newItem, leftEyePoint, rightEyePoint, cutOffFrequency, itemsNo]);
 
   return useMemo(() => {
     return {

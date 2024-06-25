@@ -18,7 +18,7 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
     useFaceMesh(videoRef);
 
   const [chewingFrequency, setChewingFrequency] = useState<number | null>(null);
-  const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
+  const [cutOffFrequency, setCutOffFrequency] = useState(0.12);
   const [itemsNo, setItemsNo] = useState(240);
   const [isGazing, setIsGazing] = useState(false);
   const [gazingStartTime, setGazingStartTime] = useState<number | null>(null);
@@ -39,17 +39,21 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
   };
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const calculateChewingFrequency = () => {
+      console.log("Filtered Peaks:", signalProcessingData.filteredPeaks);
       const frequency = avgFrequency(signalProcessingData.filteredPeaks, 5);
+      console.log("Calculated Frequency:", frequency); // Debug log
       setChewingFrequency(frequency);
       (onFrequencyUpdate || defaultOnFrequencyUpdate)(frequency); // Use the provided function or the default one
     };
 
     calculateChewingFrequency();
-  }, [animate, onFrequencyUpdate]);
+  }, [animate, onFrequencyUpdate, signalProcessingData.filteredPeaks]); // Added signalProcessingData.filteredPeaks as dependency
 
   useEffect(() => {
-    console.log(chewingFrequency);
+    console.log("Chewing Frequency Updated:", chewingFrequency); // Debug log
   }, [chewingFrequency]);
 
   useEffect(() => {
@@ -138,9 +142,8 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full object-contain z-20 pointer-events-none"
       />
-      <p
-        className="absolute right-0 text-red">
-        Frequency is :{chewingFrequency}
+      <p className="absolute right-0 text-red">
+        Frequency is: {chewingFrequency}
       </p>
     </div>
   );

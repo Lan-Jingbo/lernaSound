@@ -80,24 +80,31 @@ const FoodTesting: React.FC = () => {
             ctx.strokeStyle = "green";
             ctx.lineWidth = 4;
             ctx.strokeRect(x, y, width, height);
-
+        
             const imageData = ctx.getImageData(x, y, width, height);
             for (let i = 0; i < imageData.data.length; i += 4) {
               const r = imageData.data[i];
               const g = imageData.data[i + 1];
               const b = imageData.data[i + 2];
+        
+              // Skip the green pixels used for bounding box
+              if (r === 0 && g === 255 && b === 0) {
+                continue;
+              }
+        
               foodPixels.push([r, g, b]);
             }
           }
         });
-
+        
         if (foodPixels.length > 0) {
           const colorMap = quantize(foodPixels, 5);
           if (colorMap) {
             const colors = colorMap.palette();
             setDominantColors(colors);
           }
-        }
+        };
+        
 
         const message = document.getElementById("message");
         if (message) {
