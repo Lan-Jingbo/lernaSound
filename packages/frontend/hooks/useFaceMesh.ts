@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getMesh } from "@/utils/testing";
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
+import { MeshResult, Prediction, Keypoint } from "@/types/types"; 
 
 export const useFaceMesh = (
   videoRef: React.RefObject<HTMLVideoElement> | null
