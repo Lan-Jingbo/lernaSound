@@ -1,13 +1,27 @@
-// src/firebase/firebase.controller.ts
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller('firebase')
+@Controller()
 export class AppController {
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(private readonly appService: AppService) {}
 
-  @Get('test')
-  async testConnection() {
-    return await this.firebaseService.testConnection();
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+
+  @Get('firebase/write')
+  async writeHelloWorld() {
+    return await this.appService.writeHelloWorld();
+  }
+
+  @Get('firebase/read')
+  async readHelloWorld() {
+    return await this.appService.readHelloWorld();
+  }
+
+  @Delete('firebase/delete')
+  async deleteHelloWorld() {
+    return await this.appService.deleteHelloWorld();
   }
 }

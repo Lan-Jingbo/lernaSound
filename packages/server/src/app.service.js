@@ -28,6 +28,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
@@ -42,35 +45,66 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppService = void 0;
-// src/firebase/firebase.service.ts
 const common_1 = require("@nestjs/common");
 const admin = __importStar(require("firebase-admin"));
 let AppService = class AppService {
     constructor(firebaseAdmin) {
         this.firebaseAdmin = firebaseAdmin;
     }
-    testConnection() {
+    writeHelloWorld() {
         return __awaiter(this, void 0, void 0, function* () {
-            const db = this.firebaseAdmin.firestore();
-            const docRef = db.collection('testCollection').doc('helloWorld');
-            // Writing "Hello, World!" to Firestore
-            yield docRef.set({
-                message: 'Hello, World!',
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-            // Reading the document back
-            const doc = yield docRef.get();
-            if (doc.exists) {
-                return doc.data();
+            try {
+                const db = this.firebaseAdmin.firestore();
+                const docRef = db.collection('participants').doc('helloWorld');
+                yield docRef.set({
+                    message: 'Hello, World!',
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+                return { message: 'Document successfully written!' };
             }
-            else {
-                return { message: 'No document found!' };
+            catch (error) {
+                throw new Error('Failed to write document to Firestore');
             }
         });
     }
+    readHelloWorld() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const db = this.firebaseAdmin.firestore();
+                const docRef = db.collection('participants').doc('helloWorld');
+                const doc = yield docRef.get();
+                if (doc.exists) {
+                    return doc.data();
+                }
+                else {
+                    return { message: 'No document found!' };
+                }
+            }
+            catch (error) {
+                throw new Error('Failed to read document from Firestore');
+            }
+        });
+    }
+    deleteHelloWorld() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const db = this.firebaseAdmin.firestore();
+                const docRef = db.collection('participants').doc('helloWorld');
+                yield docRef.delete();
+                return { message: 'Document successfully deleted!' };
+            }
+            catch (error) {
+                throw new Error('Failed to delete document from Firestore');
+            }
+        });
+    }
+    getHello() {
+        return 'Hello World!';
+    }
 };
-AppService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('FIREBASE_ADMIN'))
-], AppService);
 exports.AppService = AppService;
+exports.AppService = AppService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, common_1.Inject)('FIREBASE_ADMIN')),
+    __metadata("design:paramtypes", [Object])
+], AppService);

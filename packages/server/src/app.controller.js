@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,22 +19,57 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
-// src/firebase/firebase.controller.ts
 const common_1 = require("@nestjs/common");
+const app_service_1 = require("./app.service");
 let AppController = class AppController {
-    constructor(firebaseService) {
-        this.firebaseService = firebaseService;
+    constructor(appService) {
+        this.appService = appService;
     }
-    testConnection() {
+    getHello() {
+        return this.appService.getHello();
+    }
+    writeHelloWorld() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.firebaseService.testConnection();
+            return yield this.appService.writeHelloWorld();
+        });
+    }
+    readHelloWorld() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.appService.readHelloWorld();
+        });
+    }
+    deleteHelloWorld() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.appService.deleteHelloWorld();
         });
     }
 };
-__decorate([
-    (0, common_1.Get)('test')
-], AppController.prototype, "testConnection", null);
-AppController = __decorate([
-    (0, common_1.Controller)('firebase')
-], AppController);
 exports.AppController = AppController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('firebase/write'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "writeHelloWorld", null);
+__decorate([
+    (0, common_1.Get)('firebase/read'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "readHelloWorld", null);
+__decorate([
+    (0, common_1.Delete)('firebase/delete'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "deleteHelloWorld", null);
+exports.AppController = AppController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [app_service_1.AppService])
+], AppController);

@@ -7,18 +7,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
-// src/app.module.ts
 const common_1 = require("@nestjs/common");
-const firebase_config_1 = require("./config/firebase.config");
-const app_service_1 = require("./app.service");
 const app_controller_1 = require("./app.controller");
+const app_service_1 = require("./app.service");
+const firebase_config_1 = require("./config/firebase.config");
 let AppModule = class AppModule {
 };
-AppModule = __decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [firebase_config_1.FirebaseConfigModule],
-        controllers: [app_controller_1.FirebaseController],
-        providers: [app_service_1.FirebaseService],
+        controllers: [app_controller_1.AppController],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);
-exports.AppModule = AppModule;

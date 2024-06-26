@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import { Module, Global } from '@nestjs/common';
+import admin from 'firebase-admin';
 import serviceAccount from './lernasound-firebase-adminsdk-gvj8o-edb0518c5a.json';
 
+@Global()
 @Module({
   providers: [
     {
