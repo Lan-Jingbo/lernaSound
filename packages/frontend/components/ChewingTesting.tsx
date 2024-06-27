@@ -5,19 +5,29 @@ import { useFaceMesh } from "@/hooks/useFaceMesh";
 import { drawOnCanvas } from "@/utils/testing";
 import useSignalProcessing from "@/hooks/useSignalProcessing";
 import { avgFrequency } from "@/utils/avgFrequency";
+import { useData } from "@/context/DataContext";
 
 interface ChewingTestingProps {
   onFrequencyUpdate?: (frequency: number | null) => void; // Make this prop optional
 }
 
-const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) => {
+const ChewingTesting: React.FC<ChewingTestingProps> = ({
+  onFrequencyUpdate,
+}) => {
   const [maximized, setMaximized] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // our canvas
   const { videoRef } = useVideo();
-  const { leftEyePoint, rightEyePoint, namedKeypoints, animate, euclideanDistance, lookingAtScreen } =
-    useFaceMesh(videoRef);
+  const {
+    leftEyePoint,
+    rightEyePoint,
+    namedKeypoints,
+    animate,
+    euclideanDistance,
+    lookingAtScreen,
+  } = useFaceMesh(videoRef);
 
-  const [chewingFrequency, setChewingFrequency] = useState<number | null>(null);
+  // const [chewingFrequency, setChewingFrequency] = useState<number | null>(null);
+  const { chewingFrequency, setChewingFrequency } = useData();
   const [cutOffFrequency, setCutOffFrequency] = useState(0.12);
   const [itemsNo, setItemsNo] = useState(240);
   const [isGazing, setIsGazing] = useState(false);
@@ -63,8 +73,13 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
         setGazingStartTime(Date.now());
       } else if (gazingStartTime) {
         const elapsedTime = (Date.now() - gazingStartTime) / 1000; // time in seconds
-        if (elapsedTime > 10 && (chewingFrequency === null || chewingFrequency < 10)) {
-          setReminder("Please don't forget to chew your food while watching the video.");
+        if (
+          elapsedTime > 10 &&
+          (chewingFrequency === null || chewingFrequency < 10)
+        ) {
+          setReminder(
+            "Please don't forget to chew your food while watching the video."
+          );
         } else {
           setReminder(null);
         }
@@ -89,14 +104,24 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
     };
 
     const drawCanvas = () => {
-      if (canvasRef.current && leftEyePoint && rightEyePoint && namedKeypoints && ctx) {
+      if (
+        canvasRef.current &&
+        leftEyePoint &&
+        rightEyePoint &&
+        namedKeypoints &&
+        ctx
+      ) {
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         drawOnCanvas(ctx, leftEyePoint, rightEyePoint, namedKeypoints);
 
         // Display whether the user is looking at the screen
         ctx.font = "16px Arial";
         ctx.fillStyle = "red";
-        ctx.fillText(lookingAtScreen ? "Looking at screen" : "Not looking at screen", 10, 30);
+        ctx.fillText(
+          lookingAtScreen ? "Looking at screen" : "Not looking at screen",
+          10,
+          30
+        );
 
         // Display reminder
         if (reminder) {
@@ -120,7 +145,14 @@ const ChewingTesting: React.FC<ChewingTestingProps> = ({ onFrequencyUpdate }) =>
       }
       cancelAnimationFrame(animationId);
     };
-  }, [leftEyePoint, rightEyePoint, namedKeypoints, lookingAtScreen, reminder, videoRef]);
+  }, [
+    leftEyePoint,
+    rightEyePoint,
+    namedKeypoints,
+    lookingAtScreen,
+    reminder,
+    videoRef,
+  ]);
 
   const toggleMaximize = () => {
     setMaximized(!maximized);

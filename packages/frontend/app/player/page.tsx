@@ -44,6 +44,7 @@ const PlayerPage: React.FC = () => {
   // }, []);
 
   useEffect(() => {
+    console.log(chewingFrequency, "chewingFrequency");
     if (chewingFrequency < threshold) {
       setIsEating(false);
     } else {
