@@ -39,6 +39,15 @@ npm install
 npm run start
 ```
 
+## Frontend Package
+
+To run the client, follow these steps:
+```bash
+cd packages/frontend
+npm install
+npm run dev
+```
+
 The client package hosts the user interface for the project and runs facial recognition to detect chewing pace fluctuations. Its functionality is split into two sections:
 
 1. Watching
@@ -66,10 +75,75 @@ The client package hosts the user interface for the project and runs facial reco
 
 During video playback, if the chewing pace surpasses the specified threshold, the audio pitch of the video will be changed proportionally to the deviation from the norm of 50 chews per minute.
 
+## Main Models Used**:
+    MediaPipe Facemesh:
+
+    Library: TensorFlow.js Face Landmarks Detection Module
+    Purpose: Facial landmarks detection for chewing and gaze detection.
+
+- **Eye Aspect Ratio (EAR)**:
+
+    Purpose: Gaze detection to determine if the participant is watching the video.
+
+- **COCO-SSD**:
+
+    Library: TensorFlow.js
+    Purpose: Food item detection in video frames.
+
+- **Quantize Module**:
+
+    Library: npm
+    Purpose: Food color extraction from detected food items.
+
+- **Chewing Detection Model**
+    The chewing detection model leverages the MediaPipe Facemesh Model from the TensorFlow Face Landmarks Detection Module. The process involves:
+
+- **Facial Landmarks Detection**:
+    Identifying eye points (leftEye and rightEye) and jaw points defined as:
+    const faceOvalIndexes = [
+    58, 172, 136, 150, 149, 176, 178, 148, 152, 377, 400, 378, 379, 365, 397, 288, 381
+    ];
+
+- **Chewing Activity Detection**:
+    Calculating the average distance between the eye points and the jaw points.
+    Detecting peaks in these distances over time using a low pass filter to eliminate small, non-chewing movements.
+    Calculating the chewing frequency as the inverse of the elapsed time between consecutive peaks.
+    Averaging the frequency over the most recent five peaks to obtain a more accurate chewing frequency.
+
+- **Eye Aspect Ratio (EAR) for Gaze Detection**
+    The EAR algorithm is used to detect if the participant is watching the video:
+
+    Calculation:
+
+    Measuring distances between key points around the eyes to get an EAR value.
+    Using a threshold to determine if the eyes are open or closed.
+
+- **Gaze Detection**:
+
+    If the EAR indicates that the eyes are open for more than 10 seconds, the isGazing state is set to true.
+    Food Detection Model
+    The COCO-SSD model from TensorFlow.js is used for detecting food items in video frames:
+
+- **COCO-SSD Model**:
+
+    A pre-trained object detection model on the COCO dataset.
+    Detects various objects, including food items, in a single pass, making it suitable for real-time applications.
+- **Food Detection**:
+
+    Loading the pre-trained model and running inference on video frames.
+    Filtering out food objects and marking them with bounding boxes.
+- **Food Color Extraction**
+    The quantize module is used to extract dominant colors from detected food items:
+
+- **Color Extraction**:
+Using the quantize module to extract up to five dominant colors from the food items.
+Performing this extraction in real-time for each frame containing food items.
+
 ### Notes 
 
 npm version 9.5.1
 node version v18.16.0
+
 
 ## TODO
 
@@ -80,6 +154,8 @@ node version v18.16.0
 - **Correct for head tilting**: Robust detection is crucial when considering restless populations, such as children. The system should be able to handle variations in head tilt angles and maintain reliable chewing pace detection.
 
 - **Distinguish talking and chewing**: There should be a mechanism to differentiate between talking and chewing by analyzing audio data. By utilizing both audio and visual information, the system could improve the accuracy of chew detection.
+
+- **Distinguish fast eye-blining and chewing**: There is an issue of recognizing fast blinking movements as the eye points will be somehow moved due to the blinking motion which may cause the frequency to reflect a blinking frequency, this will affect the accuracy of detection the state of watching but not chewing when the eyes are moving very rapidly. In general cases, the algorithm used in this project works well.
 
 ### Bug fixes
 

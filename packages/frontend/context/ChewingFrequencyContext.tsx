@@ -33,15 +33,21 @@ export const ChewingFrequencyProvider: React.FC<{ children: ReactNode }> = ({
   const [cutOffFrequency, setCutOffFrequency] = useState(0.5);
   const [itemsNo, setItemsNo] = useState(160);
 
-  const { animate, euclideanDistance, eyePoint } = useFaceMesh(videoRef);
-
-  const signalProcessingData = useSignalProcessing(
+  const {
     animate,
-    eyePoint,
+    leftEyePoint,
+    rightEyePoint,
     euclideanDistance,
-    cutOffFrequency,
-    itemsNo
-  );
+  } = useFaceMesh(videoRef);
+  
+    const signalProcessingData = useSignalProcessing(
+      animate,
+      leftEyePoint,
+      rightEyePoint,
+      euclideanDistance,
+      cutOffFrequency,
+      itemsNo
+    );
 
   // 设置咀嚼频率值的逻辑
   useEffect(() => {
@@ -56,7 +62,7 @@ export const ChewingFrequencyProvider: React.FC<{ children: ReactNode }> = ({
   const contextValue: ChewingFrequencyContextType = {
     chewingFrequency: chewingFrequency,
   };
-
+  
   // 返回包含提供程序的 JSX
   return (
     <ChewingFrequencyContext.Provider value={contextValue}>

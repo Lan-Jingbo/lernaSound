@@ -1,12 +1,6 @@
 import { Keypoint } from "@/types/types"; // Adjust the import path as necessary
 
 export function calculateEAR(eye: Keypoint[]): number {
-  const euclideanDistance = (point1: { x: number; y: number }, point2: { x: number; y: number }): number => {
-    const dx = point1.x - point2.x;
-    const dy = point1.y - point2.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
   const A = euclideanDistance(eye[1], eye[5]); // Vertical distance
   const B = euclideanDistance(eye[2], eye[4]); // Vertical distance
   const C = euclideanDistance(eye[0], eye[3]); // Horizontal distance
@@ -14,6 +8,12 @@ export function calculateEAR(eye: Keypoint[]): number {
   // EAR formula
   const EAR = (A + B) / (2.0 * C);
   return EAR;
+}
+
+export function euclideanDistance(point1: Keypoint, point2: Keypoint): number {
+  const dx = point1.x - point2.x;
+  const dy = point1.y - point2.y;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 export function isLookingAtScreen(leftEye: Keypoint[], rightEye: Keypoint[]): boolean {
